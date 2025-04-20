@@ -156,14 +156,16 @@
         throw new Error("Failed to fetch data. Check ICAO or try again.");
       }
 
-      const data = await response.json();
-      resultBox.textContent = data.raw || "No data found.";
-    } catch (error) {
-      resultBox.textContent = `Error: ${error.message}`;
-    }
+      const contentType = response.headers.get("content-type");
 
-    resultBox.classList.remove("hidden");
-  }
+if (contentType && contentType.includes("application/json")) {
+  const data = await response.json();
+  resultBox.textContent = data.raw || "No data found.";
+} else {
+  const text = await response.text();
+  resultBox.textContent = `Unexpected response: ${text}`;
+}
+
 </script>
 <footer class="bg-gray-800 text-white text-center py-4">
   <p>2025 | Flight Briefing Dashboard by Acul</p>
