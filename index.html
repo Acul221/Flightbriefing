@@ -1,53 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flight Briefing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100 text-gray-900">
-    <div class="container mx-auto p-4">
-      <h1 class="text-3xl font-bold mb-6">✈️ Flight Briefing Dashboard</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aviation Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
 
-      <!-- Link Section -->
-      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <a href="https://www.windy.com" target="_blank" class="bg-white rounded-xl shadow-md p-6 text-center hover:bg-gray-100">
-          🌬️ Windy
-        </a>
-        <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank" class="bg-white rounded-xl shadow-md p-6 text-center hover:bg-gray-100">
-          🔗 SuperLink
-        </a>
-        <a href="https://ecrew.lionair.com/ecrew" target="_blank" class="bg-white rounded-xl shadow-md p-6 text-center hover:bg-gray-100">
-          👥 eCrew
-        </a>
-        <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit?pli=1#gid=1237748150" target="_blank" class="bg-white rounded-xl shadow-md p-6 text-center hover:bg-gray-100">
-          📊 DMI
-        </a>
-        <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank" class="bg-white rounded-xl shadow-md p-6 text-center hover:bg-gray-100">
-          📝 E-Post Flight
-        </a>
-        <a href="https://staff.lionair.com" target="_blank" class="bg-white rounded-xl shadow-md p-6 text-center hover:bg-gray-100">
-          🏢 Staff Portal
-        </a>
-      </section>
+  <!-- Header -->
+  <header class="bg-white shadow-md p-4">
+    <h1 class="text-2xl font-bold text-center">Aviation Quick Access</h1>
+  </header>
 
-      <!-- BMKG Section -->
-      <section class="bg-white rounded-xl shadow-lg p-4 my-4">
-        <h2 class="text-xl font-semibold mb-4">🗺️ BMKG Aviation Maps</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- INA-SIAM -->
-          <div class="aspect-w-16 aspect-h-9">
-            <iframe src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94" frameborder="0" class="w-full h-full rounded-lg" allowfullscreen></iframe>
-          </div>
+  <!-- Quick Links -->
+  <section class="p-4 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-6">
+    <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank" class="bg-blue-600 text-white p-4 rounded-xl shadow-md text-center font-semibold hover:bg-blue-700">SuperLink</a>
+    <a href="https://ecrew.lionair.com/ecrew" target="_blank" class="bg-blue-600 text-white p-4 rounded-xl shadow-md text-center font-semibold hover:bg-blue-700">eCrew</a>
+    <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit" target="_blank" class="bg-blue-600 text-white p-4 rounded-xl shadow-md text-center font-semibold hover:bg-blue-700">DMI</a>
+    <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank" class="bg-blue-600 text-white p-4 rounded-xl shadow-md text-center font-semibold hover:bg-blue-700">E-Post Flight</a>
+    <a href="https://staff.lionair.com" target="_blank" class="bg-blue-600 text-white p-4 rounded-xl shadow-md text-center font-semibold hover:bg-blue-700">Staff Portal</a>
+  </section>
 
-          <!-- BMKG MAPS -->
-          <div class="aspect-w-16 aspect-h-9">
-            <iframe src="https://web-aviation.bmkg.go.id/maps" frameborder="0" class="w-full h-full rounded-lg" allowfullscreen></iframe>
-          </div>
-        </div>
-      </section>
-
+  <!-- TAF / METAR / NOTAM -->
+  <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
+    <h2 class="text-xl font-bold mb-2">TAF / METAR / NOTAM Lookup</h2>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <input id="icaoInput" type="text" placeholder="Enter ICAO (e.g., WIII)" class="flex-1 p-2 border rounded" />
+      <select id="dataType" class="p-2 border rounded">
+        <option value="TAF">TAF</option>
+        <option value="METAR">METAR</option>
+        <option value="NOTAM">NOTAM</option>
+      </select>
+      <button onclick="lookupData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lookup</button>
     </div>
-  </body>
+    <div id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></div>
+  </section>
+
+  <!-- Windy Widget -->
+  <section class="mt-8 max-w-6xl mx-auto px-4">
+    <h2 class="text-xl font-bold mb-2 text-center">Live Windy Map</h2>
+    <iframe width="100%" height="450" src="https://embed.windy.com/embed2.html" frameborder="0"></iframe>
+  </section>
+
+  <!-- INA-SIAM BMKG -->
+  <section class="mt-8 max-w-6xl mx-auto px-4">
+    <h2 class="text-xl font-bold mb-2 text-center">INA-SIAM</h2>
+    <iframe width="100%" height="450" src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94" frameborder="0"></iframe>
+  </section>
+
+  <!-- BMKG MAPS External Link Card -->
+  <section class="mt-8 max-w-xl mx-auto px-4">
+    <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
+    <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
+      Open BMKG MAPS Website
+    </a>
+  </section>
+
+  <!-- JavaScript -->
+  <script>
+    function lookupData() {
+      const icao = document.getElementById("icaoInput").value.toUpperCase();
+      const type = document.getElementById("dataType").value;
+      const resultBox = document.getElementById("resultBox");
+
+      if (!icao) {
+        resultBox.textContent = "Please enter an ICAO code.";
+        resultBox.classList.remove("hidden");
+        return;
+      }
+
+      // MOCK DATA
+      const mockData = {
+        TAF: `TAF ${icao} 191100Z 1912/2018 00000KT CAVOK`,
+        METAR: `METAR ${icao} 191130Z 00000KT CAVOK 30/22 Q1012`,
+        NOTAM: `NOTAM ${icao}: Runway 25 closed due to maintenance 19/1200Z - 20/1800Z`
+      };
+
+      resultBox.textContent = mockData[type] || "No data found.";
+      resultBox.classList.remove("hidden");
+    }
+  </script>
+
+</body>
 </html>
