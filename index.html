@@ -5,68 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aviation Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Add Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
   <!-- Header -->
-<header class="bg-white shadow-md p-4">
-  <h1 class="text-4xl font-bold text-center">Aviation Quick Access</h1>
-</header>
-<div id="clock-container"></div>
+  <header class="bg-white shadow-md p-4">
+    <h1 class="text-4xl font-bold text-center">Aviation Quick Access</h1>
+  </header>
+
+  <!-- Clock Placeholder -->
   <section id="clock-container" class="mt-4 text-center"></section>
 
-
   <!-- Quick Links -->
-<section class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-  <!-- SuperLink -->
-  <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-    <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank" class="block p-6 text-center">
-     <img src="https://github.com/Acul221/Flightbriefing/blob/main/superlink-icon.png?raw=true" alt="Superlink Icon" class="w-45 h-32 mx-auto mb-4">
-      <h3 class="font-semibold text-lg text-gray-800">SuperLink</h3>
-      <p class="text-sm text-gray-600">Access the crew link login portal.</p>
-    </a>
-  </div>
+  <section class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
+      <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank" class="block p-6 text-center">
+        <img src="https://github.com/Acul221/Flightbriefing/blob/main/superlink-icon.png?raw=true" alt="Superlink Icon" class="w-45 h-32 mx-auto mb-4">
+        <h3 class="font-semibold text-lg text-gray-800">SuperLink</h3>
+        <p class="text-sm text-gray-600">Access the crew link login portal.</p>
+      </a>
+    </div>
 
-   <!-- eCrew -->
-  <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-    <a href="https://ecrew.lionair.com/ecrew" target="_blank" class="block p-6 text-center">
-      <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/1200x630wa-removebg-preview.png" alt="eCrew Icon" class="w-52 h-32 mx-auto mb-4">
-      <h3 class="font-semibold text-lg text-gray-800">eCrew</h3>
-      <p class="text-sm text-gray-600">Your Flight Schedule.</p>
-    </a>
-  </div>
+    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
+      <a href="https://ecrew.lionair.com/ecrew" target="_blank" class="block p-6 text-center">
+        <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/1200x630wa-removebg-preview.png" alt="eCrew Icon" class="w-52 h-32 mx-auto mb-4">
+        <h3 class="font-semibold text-lg text-gray-800">eCrew</h3>
+        <p class="text-sm text-gray-600">Your Flight Schedule.</p>
+      </a>
+    </div>
 
-  <!-- DMI -->
-  <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-    <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit" target="_blank" class="block p-6 text-center">
-      <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/11888220.png" alt="DMI Icon" class="w-32 h-32 mx-auto mb-4">
-      <h3 class="font-semibold text-lg text-gray-800">DMI</h3>
-      <p class="text-sm text-gray-600">Track important data sheets.</p>
-    </a>
-  </div>
+    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
+      <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit" target="_blank" class="block p-6 text-center">
+        <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/11888220.png" alt="DMI Icon" class="w-32 h-32 mx-auto mb-4">
+        <h3 class="font-semibold text-lg text-gray-800">DMI</h3>
+        <p class="text-sm text-gray-600">Track important data sheets.</p>
+      </a>
+    </div>
 
-  <!-- E-Post Flight -->
-  <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-    <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank" class="block p-6 text-center">
-      <img src="images/epostflight-icon.png" alt="E-Post Flight Icon" class="w-32 h-32 mx-auto mb-4">
-      <h3 class="font-semibold text-lg text-gray-800">E-Post Flight</h3>
-      <p class="text-sm text-gray-600">Submit and manage post-flight reports.</p>
-    </a>
-  </div>
+    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
+      <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank" class="block p-6 text-center">
+        <img src="images/epostflight-icon.png" alt="E-Post Flight Icon" class="w-32 h-32 mx-auto mb-4">
+        <h3 class="font-semibold text-lg text-gray-800">E-Post Flight</h3>
+        <p class="text-sm text-gray-600">Submit and manage post-flight reports.</p>
+      </a>
+    </div>
 
-  <!-- Staff Portal -->
-  <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-    <a href="https://staff.lionair.com" target="_blank" class="block p-6 text-center">
-      <img src="images/staffportal-icon.png" alt="Staff Portal Icon" class="w-32 h-32 mx-auto mb-4">
-      <h3 class="font-semibold text-lg text-gray-800">Staff Portal</h3>
-      <p class="text-sm text-gray-600">Access the staff portal for company updates.</p>
-    </a>
-  </div>
+    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
+      <a href="https://staff.lionair.com" target="_blank" class="block p-6 text-center">
+        <img src="images/staffportal-icon.png" alt="Staff Portal Icon" class="w-32 h-32 mx-auto mb-4">
+        <h3 class="font-semibold text-lg text-gray-800">Staff Portal</h3>
+        <p class="text-sm text-gray-600">Access the staff portal for company updates.</p>
+      </a>
+    </div>
+  </section>
 
-</section>
-</section>
   <!-- TAF / METAR / NOTAM -->
   <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
     <h2 class="text-xl font-bold mb-2">TAF / METAR / NOTAM Lookup</h2>
@@ -80,8 +73,7 @@
       <button onclick="lookupData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lookup</button>
     </div>
     <div id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></div>
-<div id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></div>
-
+    <div id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></div>
   </section>
 
   <!-- Windy Widget -->
@@ -97,91 +89,31 @@
   </section>
 
   <!-- BMKG MAPS External Link Card -->
-<section class="mt-8 max-w-xl mx-auto px-4">
-  <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
-  <div class="grid grid-cols-2 gap-4">
-    <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
-      Open BMKG MAPS Website
-    </a>
-    <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
-      High Level SIGWX
-    </a>
-  </div>
-</section>
+  <section class="mt-8 max-w-xl mx-auto px-4">
+    <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
+    <div class="grid grid-cols-2 gap-4">
+      <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
+        Open BMKG MAPS Website
+      </a>
+      <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
+        High Level SIGWX
+      </a>
+    </div>
+  </section>
 
-  <!-- JavaScript -->
-  <script>
-    function lookupData() {
-      const icao = document.getElementById("icaoInput").value.toUpperCase();
-      const type = document.getElementById("dataType").value;
-      const resultBox = document.getElementById("resultBox");
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center py-4">
+    <p>2025 | Flight Briefing Dashboard by Acul</p>
+  </footer>
 
-      if (!icao) {
-        resultBox.textContent = "Please enter an ICAO code.";
-        resultBox.classList.remove("hidden");
-        return;
-      }
-
-      // MOCK DATA
-      const mockData = {
-        TAF: `TAF ${icao} 191100Z 1912/2018 00000KT CAVOK`,
-        METAR: `METAR ${icao} 191130Z 00000KT CAVOK 30/22 Q1012`,
-        NOTAM: `NOTAM ${icao}: Runway 25 closed due to maintenance 19/1200Z - 20/1800Z`
-      };
-
-      resultBox.textContent = mockData[type] || "No data found.";
-      resultBox.classList.remove("hidden");
-    }
-  </script>
-<!-- Other content in your HTML -->
-
-<script>
-  async function lookupData() {
-    const icao = document.getElementById("icaoInput").value.toUpperCase();
-    const type = document.getElementById("dataType").value;
-    const resultBox = document.getElementById("resultBox");
-
-    if (!icao) {
-      resultBox.textContent = "Please enter an ICAO code.";
-      resultBox.classList.remove("hidden");
-      return;
-    }
-
-    const url = `https://avwx.rest/api/${type.toLowerCase()}/${icao}`;
-    
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
-          Accept: "application/json"
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch data. Check ICAO or try again.");
-      }
-
-      const contentType = response.headers.get("content-type");
-
-if (contentType && contentType.includes("application/json")) {
-  const data = await response.json();
-  resultBox.textContent = data.raw || "No data found.";
-} else {
-  const text = await response.text();
-  resultBox.textContent = `Unexpected response: ${text}`;
-}
-
-</script>
-<footer class="bg-gray-800 text-white text-center py-4">
-  <p>2025 | Flight Briefing Dashboard by Acul</p>
-</footer>
-  
-<!-- Script lookupData -->
+  <!-- Script lookupData -->
   <script>
     async function lookupData() {
       const icao = document.getElementById("icaoInput").value.trim().toUpperCase();
       const dataType = document.getElementById("dataType").value;
       const resultBox = document.getElementById("resultBox");
+      const timestampBox = document.getElementById("timestamp");
+      const timestampValue = document.getElementById("timestampValue");
 
       if (!icao) {
         resultBox.textContent = "Please enter a valid ICAO code.";
@@ -189,47 +121,50 @@ if (contentType && contentType.includes("application/json")) {
         return;
       }
 
-      resultBox.classList.add("hidden");
       resultBox.textContent = "Loading...";
-
-      let url = "";
-      let headers = {};
-      
-      if (dataType === 'NOTAM') {
-  url = `/.netlify/functions/notam?icao=${icao}`;
-}
-
-      } else {
-        url = `https://avwx.rest/api/${dataType.toLowerCase()}/${icao}`;
-        headers = {
-          Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c"
-        };
-      }
+      resultBox.classList.remove("hidden");
+      timestampBox.classList.add("hidden");
 
       try {
-        const response = await fetch(url, { headers });
-        const data = await response.json();
+        let url = "";
+        let headers = {};
 
-        if (!response.ok || data.error) {
-          throw new Error(data.error || "Error fetching data.");
+        if (dataType === 'NOTAM') {
+          url = `/.netlify/functions/notam?icao=${icao}`;
+        } else {
+          url = `https://avwx.rest/api/${dataType.toLowerCase()}/${icao}`;
+          headers = {
+            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
+            Accept: "application/json"
+          };
         }
 
-        const text = dataType === "NOTAM" ? data.data : data.raw;
-        resultBox.textContent = text;
-      } catch (err) {
-        resultBox.textContent = "Failed to fetch data: " + err.message;
-      }
+        const response = await fetch(url, { headers });
 
-      resultBox.classList.remove("hidden");
+        if (!response.ok) {
+          throw new Error("Failed to fetch data. Please check ICAO or try again.");
+        }
+
+        const contentType = response.headers.get("content-type");
+        let text = "";
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          text = data.raw || JSON.stringify(data, null, 2);
+        } else {
+          text = await response.text();
+        }
+
+        resultBox.textContent = text;
+        const now = new Date();
+        timestampValue.textContent = now.toLocaleString();
+        timestampBox.classList.remove("hidden");
+
+      } catch (error) {
+        resultBox.textContent = error.message;
+      }
     }
   </script>
-  <script>
-  fetch('clock.html')
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById('clock-container').innerHTML = html;
-    });
-</script>
 
 </body>
 </html>
