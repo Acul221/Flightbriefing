@@ -1,7 +1,7 @@
 // netlify/functions/notam.js
 
 export async function handler(event, context) {
-  const token = "NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c"; // Ganti kalau perlu
+  const token = "NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c";
   const icao = event.queryStringParameters.icao?.toUpperCase();
 
   if (!icao) {
@@ -15,6 +15,7 @@ export async function handler(event, context) {
     const response = await fetch(`https://avwx.rest/api/notam/${icao}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        'Cache-Control': 'no-cache',
       },
     });
 
@@ -29,6 +30,9 @@ export async function handler(event, context) {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       body: JSON.stringify(data),
     };
   } catch (error) {
@@ -38,9 +42,3 @@ export async function handler(event, context) {
     };
   }
 }
-headers: {
-  Authorization: `Bearer ${AVWX_TOKEN}`,
-  'Cache-Control': 'no-cache',
-}
-url = `/.netlify/functions/notam?icao=${icao}&t=${Date.now()}`;
-
