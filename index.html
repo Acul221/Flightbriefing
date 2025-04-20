@@ -12,16 +12,17 @@
   <!-- Header -->
   <header class="bg-white shadow-md p-4">
     <h1 class="text-4xl font-bold text-center">Aviation Quick Access</h1>
+    <section id="clock-container" class="mt-4 text-center"></section>
   </header>
 
-  <!-- Clock Placeholder -->
+  <!-- Clock Script -->
   <script>
-  fetch('clock.html')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('clock-container').innerHTML = html;
-    });
-</script>
+    fetch('clock.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('clock-container').innerHTML = html;
+      });
+  </script>
 
   <!-- Quick Links -->
   <section class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
