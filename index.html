@@ -170,6 +170,51 @@ if (contentType && contentType.includes("application/json")) {
 <footer class="bg-gray-800 text-white text-center py-4">
   <p>2025 | Flight Briefing Dashboard by Acul</p>
 </footer>
-</body>
+  
+<!-- Script lookupData -->
+  <script>
+    async function lookupData() {
+      const icao = document.getElementById("icaoInput").value.trim().toUpperCase();
+      const dataType = document.getElementById("dataType").value;
+      const resultBox = document.getElementById("resultBox");
+
+      if (!icao) {
+        resultBox.textContent = "Please enter a valid ICAO code.";
+        resultBox.classList.remove("hidden");
+        return;
+      }
+
+      resultBox.classList.add("hidden");
+      resultBox.textContent = "Loading...";
+
+      let url = "";
+      let headers = {};
+      
+      if (dataType === "NOTAM") {
+        url = `/.netlify/functions/notam?icao=${icao}`;
+      } else {
+        url = `https://avwx.rest/api/${dataType.toLowerCase()}/${icao}`;
+        headers = {
+          Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c"
+        };
+      }
+
+      try {
+        const response = await fetch(url, { headers });
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.error || "Error fetching data.");
+        }
+
+        const text = dataType === "NOTAM" ? data.data : data.raw;
+        resultBox.textContent = text;
+      } catch (err) {
+        resultBox.textContent = "Failed to fetch data: " + err.message;
+      }
+
+      resultBox.classList.remove("hidden");
+    }
+  </script>
 </body>
 </html>
