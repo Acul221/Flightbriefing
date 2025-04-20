@@ -1,68 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flight Briefing</title>
   <style>
     body {
-      background-color: #d3d3d3; /* Gray background */
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
       margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 20px;
     }
     h1 {
-      margin-top: 30px;
-      color: #333;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-      width: 90%;
-      margin: 40px auto;
-    }
-    .link {
-      background: white;
-      border-radius: 50%;
-      width: 120px;
-      height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-      text-decoration: none;
       color: #333;
-      font-weight: bold;
-      font-size: 14px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
     }
-    .link:hover {
-      transform: scale(1.05);
+    .link-section, .metar-section, .windy-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .note {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 40px;
+    .link-section a {
+      display: block;
+      margin: 10px 0;
+      font-size: 18px;
+      color: #0066cc;
+      text-decoration: none;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    input[type="text"] {
+      padding: 8px;
+      width: 200px;
+    }
+    button {
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 15px;
+      background-color: #eef;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
   <h1>Flight Briefing</h1>
-  <div class="container">
-    <a class="link" href="https://www.windy.com" target="_blank">Windy</a>
-    <a class="link" href="https://metar-taf.com" target="_blank">TAF/METAR</a>
-    <a class="link" href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank">SuperLink</a>
-    <a class="link" href="https://ecrew.lionair.com/ecrew" target="_blank">eCrew</a>
-    <a class="link" href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit?pli=1#gid=1237748150" target="_blank">DMI</a>
-    <a class="link" href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank">E-Post Flight</a>
-    <a class="link" href="https://staff.lionair.com" target="_blank">Staff Portal</a>
+
+  <div class="link-section">
+    <h2>Quick Links</h2>
+    <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank">SuperLink</a>
+    <a href="https://ecrew.lionair.com/ecrew" target="_blank">eCrew</a>
+    <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit?pli=1#gid=1237748150" target="_blank">DMI</a>
+    <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank">E-POST FLIGHT</a>
+    <a href="https://staff.lionair.com/auth/login" target="_blank">Staff Portal</a>
   </div>
-  <div class="note">Tap icon to open link</div>
+
+  <div class="metar-section">
+    <h2>TAF/METAR/NOTAM Lookup</h2>
+    <div class="form-group">
+      <input type="text" id="icaoInput" placeholder="Enter ICAO code (e.g. WIII)">
+    </div>
+    <button onclick="getMockData('metar')">Get METAR</button>
+    <button onclick="getMockData('taf')">Get TAF</button>
+    <button onclick="getMockData('notam')">Get NOTAM</button>
+    <div id="metarResult" class="result"></div>
+  </div>
+
+  <div class="windy-section">
+    <h2>Live Weather - Windy</h2>
+    <iframe src="https://embed.windy.com/embed2.html" frameborder="0"></iframe>
+  </div>
+
+  <script>
+    function getMockData(type) {
+      const icao = document.getElementById("icaoInput").value.toUpperCase();
+      let resultText = "";
+      if (!icao) {
+        resultText = "Please enter a valid ICAO code.";
+      } else {
+        switch(type) {
+          case 'metar':
+            resultText = `METAR for ${icao}: WIII 190700Z 26008KT 9999 FEW018 30/24 Q1010`; break;
+          case 'taf':
+            resultText = `TAF for ${icao}: TAF WIII 190500Z 1906/2006 27010KT 9999 FEW020`;
+            break;
+          case 'notam':
+            resultText = `NOTAM for ${icao}: RWY 07/25 CLOSED DUE TO MAINTENANCE UNTIL 200600Z`; break;
+        }
+      }
+      document.getElementById("metarResult").innerText = resultText;
+    }
+  </script>
 </body>
 </html>
