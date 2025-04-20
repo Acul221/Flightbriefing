@@ -132,13 +132,32 @@
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
   }
 </style>
-  <!-- INA-SIAM BMKG -->
-  <section class="mt-8 max-w-6xl mx-auto px-4">
-    <h2 class="text-xl font-bold mb-2 text-center">INA-SIAM</h2>
-    <iframe width="100%" height="450" src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94" frameborder="0"></iframe>
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-  </section>
+ 
+<!-- INA-SIAM BMKG -->
+<section class="mt-8 max-w-6xl mx-auto px-4">
+  <h2 class="text-xl font-bold mb-2 text-center">INA-SIAM</h2>
+  <iframe
+    class="floating-effect"
+    width="100%"
+    height="450"
+    src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94"
+    frameborder="0">
+  </iframe>
+</section>
 
+<!-- Add this style block to your CSS -->
+<style>
+  .floating-effect {
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow for floating effect */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
+  }
+
+  .floating-effect:hover {
+    transform: translateY(-10px); /* Slight upward movement */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+  }
+</style>
   <!-- BMKG MAPS External Link Card -->
   <section class="mt-8 max-w-xl mx-auto px-4">
     <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
