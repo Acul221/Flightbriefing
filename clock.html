@@ -1,54 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Clock</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body>
+<section id="clock-container"></section>
 
-  <div class="p-4 bg-white rounded-xl shadow-md max-w-sm mx-auto mt-6 text-center">
-    <h2 class="text-xl font-bold mb-4">Current Time</h2>
-    <div class="text-lg space-y-2">
-      <div>
-        <p><strong>UTC:</strong></p>
-        <p id="utc-date">-- -- ----</p>
-        <p id="utc-time">--:--:--</p>
-      </div>
-      <div>
-        <p><strong>Local:</strong></p>
-        <p id="local-date">-- -- ----</p>
-        <p id="local-time">--:--:--</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function updateClock() {
-      const now = new Date();
-
-      const utcDate = now.toUTCString().split(' ').slice(0, 4).join(' ');
-      const utcTime = now.toUTCString().split(' ')[4];
-
-      const localDate = now.toLocaleDateString(undefined, {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-
-      const localTime = now.toLocaleTimeString();
-
-      document.getElementById('utc-date').textContent = utcDate;
-      document.getElementById('utc-time').textContent = utcTime;
-      document.getElementById('local-date').textContent = localDate;
-      document.getElementById('local-time').textContent = localTime;
-    }
-
-    setInterval(updateClock, 1000);
-    updateClock();
-  </script>
-
-</body>
-</html>
+<script>
+  fetch('clock.html')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('clock-container').innerHTML = html;
+    });
+</script>
