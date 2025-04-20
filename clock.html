@@ -1,17 +1,15 @@
-<!-- Clock Container Section -->
-<section id="clock-container" style="width: 300px; height: 300px; margin: auto; text-align: center; border: 1px solid #000; display: flex; justify-content: center; align-items: center;"></section>
-
-<!-- JavaScript to Fetch and Load clock.html -->
-<script>
-  fetch('clock.html')
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById('clock-container').innerHTML = html;
-
-      // Adjust the size of the clock dynamically
-      const clockElement = document.getElementById('clock-container');
-      clockElement.style.width = "300px"; // Set width
-      clockElement.style.height = "300px"; // Set height
-    })
-    .catch(err => console.error("Failed to load clock.html:", err));
-</script>
+<!-- Clock Content -->
+<div id="clock" style="color: black; font-size: 2em; text-align: center;">
+  <!-- Your clock content or JavaScript-generated clock -->
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</div>
