@@ -190,8 +190,10 @@ if (contentType && contentType.includes("application/json")) {
       let url = "";
       let headers = {};
       
-      if (dataType === "NOTAM") {
-        url = `/.netlify/functions/notam?icao=${icao}`;
+      if (dataType === 'NOTAM') {
+  url = `/.netlify/functions/notam?icao=${icao}`;
+}
+
       } else {
         url = `https://avwx.rest/api/${dataType.toLowerCase()}/${icao}`;
         headers = {
