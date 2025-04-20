@@ -15,14 +15,28 @@
     <section id="clock-container" class="mt-4 text-center"></section>
   </header>
 
-  <!-- Clock Script -->
+  <!-- Fetch and Clock Script -->
   <script>
     fetch('clock.html')
       .then(response => response.text())
       .then(html => {
         document.getElementById('clock-container').innerHTML = html;
+
+        // Start the clock after the content is loaded
+        function updateClock() {
+          const now = new Date();
+          const hours = String(now.getHours()).padStart(2, '0');
+          const minutes = String(now.getMinutes()).padStart(2, '0');
+          const seconds = String(now.getSeconds()).padStart(2, '0');
+          document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
       });
   </script>
+
+</body>
+</html>
 
   <!-- Quick Links -->
   <section class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
