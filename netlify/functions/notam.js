@@ -38,3 +38,9 @@ export async function handler(event, context) {
     };
   }
 }
+headers: {
+  Authorization: `Bearer ${AVWX_TOKEN}`,
+  'Cache-Control': 'no-cache',
+}
+url = `/.netlify/functions/notam?icao=${icao}&t=${Date.now()}`;
+
