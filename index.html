@@ -128,6 +128,44 @@
       resultBox.classList.remove("hidden");
     }
   </script>
+<!-- Other content in your HTML -->
 
+<script>
+  async function lookupData() {
+    const icao = document.getElementById("icaoInput").value.toUpperCase();
+    const type = document.getElementById("dataType").value;
+    const resultBox = document.getElementById("resultBox");
+
+    if (!icao) {
+      resultBox.textContent = "Please enter an ICAO code.";
+      resultBox.classList.remove("hidden");
+      return;
+    }
+
+    const url = `https://avwx.rest/api/${type.toLowerCase()}/${icao}`;
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
+          Accept: "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data. Check ICAO or try again.");
+      }
+
+      const data = await response.json();
+      resultBox.textContent = data.raw || "No data found.";
+    } catch (error) {
+      resultBox.textContent = `Error: ${error.message}`;
+    }
+
+    resultBox.classList.remove("hidden");
+  }
+</script>
+
+</body>
 </body>
 </html>
