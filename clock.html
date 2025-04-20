@@ -1,0 +1,22 @@
+<!-- clock.html -->
+<div class="p-4 bg-white rounded-xl shadow-md max-w-sm mx-auto mt-6 text-center">
+  <h2 class="text-xl font-bold mb-4">Current Time</h2>
+  <div class="text-lg">
+    <p><strong>UTC:</strong> <span id="utc-time">--:--:--</span></p>
+    <p><strong>Local:</strong> <span id="local-time">--:--:--</span></p>
+  </div>
+</div>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const utc = now.toUTCString().split(" ")[4];
+    const local = now.toLocaleTimeString();
+
+    document.getElementById('utc-time').textContent = utc;
+    document.getElementById('local-time').textContent = local;
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
