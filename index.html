@@ -15,46 +15,39 @@
     <section id="clock-container" class="mt-4 text-center"></section>
   </header>
 
-  <!-- TAF / METAR / NOTAM -->
-  <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
-    <h2 class="text-xl font-bold mb-2">TAF / METAR / NOTAM Lookup</h2>
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-      <input id="icaoInput" type="text" placeholder="Enter ICAO (e.g., WIII)" class="flex-1 p-2 border rounded" />
-      <select id="dataType" class="p-2 border rounded">
-        <option value="TAF">TAF</option>
-        <option value="METAR">METAR</option>
-        <option value="NOTAM">NOTAM</option>
-      </select>
-      <button onclick="lookupData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lookup</button>
-    </div>
-    <div id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></div>
-    <div id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></div>
-  </section>
+  <!-- Clock Script -->
+  <script>
+    // Fetch and inject the clock.html content
+    fetch('clock.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('clock-container').innerHTML = html;
 
-  <!-- Windy Widget -->
-  <section class="mt-8 max-w-6xl mx-auto px-4">
-    <h2 class="text-xl font-bold mb-2 text-center">Live Windy Map</h2>
-    <iframe 
-      class="floating-effect"
-      width="100%" 
-      height="450" 
-      src="https://embed.windy.com/embed2.html" 
-      frameborder="0">
-    </iframe>
-  </section>
+        // Start the clock after the content is loaded
+        function updateClock() {
+          const now = new Date();
 
-  <!-- INA-SIAM BMKG -->
-  <section class="mt-8 max-w-6xl mx-auto px-4">
-    <h2 class="text-xl font-bold mb-2 text-center">INA-SIAM</h2>
-    <iframe
-      class="floating-effect"
-      width="100%"
-      height="450"
-      src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94"
-      frameborder="0">
-    </iframe>
-  </section>
+          // Local Time and Date
+          const localDate = now.toLocaleDateString();
+          const localTime = now.toLocaleTimeString();
+          
+          // UTC Time and Date
+          const utcDate = now.toISOString().slice(0, 10); // Extract DD-MM-YYY from ISO string
+          const utcTime = now.toISOString().slice(11, 19); // Extract HH:MM:SS from ISO string
 
+          // Update the placeholders
+          document.getElementById('local-time').textContent = `Local: ${localDate}, ${localTime}`;
+          document.getElementById('utc-time').textContent = `UTC: ${utcDate}, ${utcTime}`;
+        }
+
+        // Update every second
+        setInterval(updateClock, 1000);
+        updateClock();
+      });
+  </script>
+
+</body>
+</html>
   <!-- Quick Links -->
   <section class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
     <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
@@ -88,6 +81,94 @@
         <p class="text-sm text-gray-600">Submit and manage post-flight reports.</p>
       </a>
     </div>
+
+    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
+      <a href="https://staff.lionair.com" target="_blank" class="block p-6 text-center">
+        <img src="images/staffportal-icon.png" alt="Staff Portal Icon" class="w-32 h-32 mx-auto mb-4">
+        <h3 class="font-semibold text-lg text-gray-800">Staff Portal</h3>
+        <p class="text-sm text-gray-600">Access the staff portal for company updates.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- TAF / METAR / NOTAM -->
+  <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
+    <h2 class="text-xl font-bold mb-2">TAF / METAR / NOTAM Lookup</h2>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <input id="icaoInput" type="text" placeholder="Enter ICAO (e.g., WIII)" class="flex-1 p-2 border rounded" />
+      <select id="dataType" class="p-2 border rounded">
+        <option value="TAF">TAF</option>
+        <option value="METAR">METAR</option>
+        <option value="NOTAM">NOTAM</option>
+      </select>
+      <button onclick="lookupData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lookup</button>
+    </div>
+    <div id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></div>
+    <div id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></div>
+  </section>
+
+  <!-- Windy Widget -->
+<section class="mt-8 max-w-6xl mx-auto px-4">
+  <h2 class="text-xl font-bold mb-2 text-center">Live Windy Map</h2>
+  <iframe 
+    class="floating-effect"
+    width="100%" 
+    height="450" 
+    src="https://embed.windy.com/embed2.html" 
+    frameborder="0">
+  </iframe>
+</section>
+
+<!-- Add this style block to your CSS -->
+<style>
+  .floating-effect {
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow for floating effect */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
+  }
+
+  .floating-effect:hover {
+    transform: translateY(-10px); /* Slight upward movement */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+  }
+</style>
+ 
+<!-- INA-SIAM BMKG -->
+<section class="mt-8 max-w-6xl mx-auto px-4">
+  <h2 class="text-xl font-bold mb-2 text-center">INA-SIAM</h2>
+  <iframe
+    class="floating-effect"
+    width="100%"
+    height="450"
+    src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94"
+    frameborder="0">
+  </iframe>
+</section>
+
+<!-- Add this style block to your CSS -->
+<style>
+  .floating-effect {
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow for floating effect */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
+  }
+
+  .floating-effect:hover {
+    transform: translateY(-10px); /* Slight upward movement */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+  }
+</style>
+  <!-- BMKG MAPS External Link Card -->
+  <section class="mt-8 max-w-xl mx-auto px-4">
+    <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
+    <div class="grid grid-cols-2 gap-4">
+      <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
+        Open BMKG MAPS Website
+      </a>
+      <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
+        High Level SIGWX
+      </a>
+    </div>
   </section>
 
   <!-- Footer -->
@@ -98,8 +179,62 @@
   <!-- Script lookupData -->
   <script>
     async function lookupData() {
-      // Logic remains unchanged
+      const icao = document.getElementById("icaoInput").value.trim().toUpperCase();
+      const dataType = document.getElementById("dataType").value;
+      const resultBox = document.getElementById("resultBox");
+      const timestampBox = document.getElementById("timestamp");
+      const timestampValue = document.getElementById("timestampValue");
+
+      if (!icao) {
+        resultBox.textContent = "Please enter a valid ICAO code.";
+        resultBox.classList.remove("hidden");
+        return;
+      }
+
+      resultBox.textContent = "Loading...";
+      resultBox.classList.remove("hidden");
+      timestampBox.classList.add("hidden");
+
+      try {
+        let url = "";
+        let headers = {};
+
+        if (dataType === 'NOTAM') {
+          url = `/.netlify/functions/notam?icao=${icao}`;
+        } else {
+          url = `https://avwx.rest/api/${dataType.toLowerCase()}/${icao}`;
+          headers = {
+            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
+            Accept: "application/json"
+          };
+        }
+
+        const response = await fetch(url, { headers });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch data. Please check ICAO or try again.");
+        }
+
+        const contentType = response.headers.get("content-type");
+        let text = "";
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          text = data.raw || JSON.stringify(data, null, 2);
+        } else {
+          text = await response.text();
+        }
+
+        resultBox.textContent = text;
+        const now = new Date();
+        timestampValue.textContent = now.toLocaleString();
+        timestampBox.classList.remove("hidden");
+
+      } catch (error) {
+        resultBox.textContent = error.message;
+      }
     }
   </script>
+
 </body>
 </html>
