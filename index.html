@@ -15,45 +15,9 @@
     <section id="clock-container" class="mt-4 text-center"></section>
   </header>
 
-  <!-- Clock Script -->
-<script>
-  // Fetch and inject the clock.html content
-  fetch('clock.html')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('clock-container').innerHTML = html;
+  <!-- Clock & Time Calculators Section -->
+<section id="clock-container" class="mt-4 text-center"></section>
 
-      // Start the clock after the content is loaded
-      function updateClock() {
-        const now = new Date();
-
-        // Helper function to format numbers with leading zero
-        function pad(n) {
-          return n < 10 ? '0' + n : n;
-        }
-
-        // Local time details
-        const localDay = now.toLocaleDateString(undefined, { weekday: 'long' });
-        const localDate = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
-        const localTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-
-        // UTC time details
-        const utc = new Date(now.toUTCString().slice(0, -4)); // remove GMT
-        const utcDay = utc.toLocaleDateString(undefined, { weekday: 'long', timeZone: 'UTC' });
-        const utcDate = `${pad(utc.getDate())}-${pad(utc.getMonth() + 1)}-${utc.getFullYear()}`;
-        const utcTime = `${pad(utc.getHours())}:${pad(utc.getMinutes())}:${pad(utc.getSeconds())}Z`;
-
-        // Update the placeholders
-        document.getElementById('local-time').textContent = `Local Time : ${localDay}, ${localDate} ${localTime}`;
-        document.getElementById('utc-time').textContent = `UTC : ${utcDay}, ${utcDate} ${utcTime}`;
-      
-
-      // Update every second
-      setInterval(updateClock, 1000);
-      updateClock();
-    
-    <section>
-       <!-- HTML Section -->
 <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
   <h2 class="text-xl font-bold mb-2">Time Calculators</h2>
   <div class="mb-4">
@@ -70,38 +34,54 @@
 </section>
 
 <script>
+  // --- Clock Script ---
+  fetch('clock.html')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('clock-container').innerHTML = html;
+
+      function pad(n) { return n < 10 ? '0' + n : n; }
+      function updateClock() {
+        const now = new Date();
+        // Local
+        const localDay = now.toLocaleDateString(undefined, { weekday: 'long' });
+        const localDate = `${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}`;
+        const localTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        // UTC
+        const utc = new Date(now.toISOString());
+        const utcDay  = utc.toLocaleDateString(undefined, { weekday: 'long', timeZone: 'UTC' });
+        const utcDate = `${pad(utc.getDate())}-${pad(utc.getMonth()+1)}-${utc.getFullYear()}`;
+        const utcTime = `${pad(utc.getUTCHours())}:${pad(utc.getUTCMinutes())}:${pad(utc.getUTCSeconds())}Z`;
+        // Update
+        document.getElementById('local-time').textContent = `Local Time: ${localDay}, ${localDate} ${localTime}`;
+        document.getElementById('utc-time').textContent   = `UTC: ${utcDay}, ${utcDate} ${utcTime}`;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+    });
+
+  // --- Time Difference Calculator ---
   function calculateTimeDifference() {
-    const timeStart = document.getElementById("timeStart").value;
-    const timeEnd = document.getElementById("timeEnd").value;
-
-    // Check if both start and end times are provided
-    if (!timeStart || !timeEnd) {
-      alert("Please select both start and end times.");
+    const startVal = document.getElementById('timeStart').value;
+    const endVal   = document.getElementById('timeEnd').value;
+    if (!startVal || !endVal) {
+      alert('Please select both start and end times.');
       return;
     }
-
-    const startDate = new Date(timeStart);
-    const endDate = new Date(timeEnd);
-
-    // Validate that the end time is after the start time
-    if (endDate <= startDate) {
-      alert("End time must be after start time.");
+    const startDt = new Date(startVal);
+    const endDt   = new Date(endVal);
+    if (endDt <= startDt) {
+      alert('End time must be after start time.');
       return;
     }
-
-    // Calculate the time difference in milliseconds
-    const differenceInMilliseconds = endDate - startDate;
-
-    // Convert milliseconds to days, hours, and minutes
-    const days = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((differenceInMilliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
-
-    // Display the result
-    const resultParagraph = document.getElementById("timeDifferenceResult");
-    resultParagraph.textContent = `${days} days, ${hours} hours, and ${minutes} minutes`;
-    resultParagraph.classList.remove("hidden");
-  
+    const diffMs = endDt - startDt;
+    const days    = Math.floor(diffMs / (1000*60*60*24));
+    const hours   = Math.floor((diffMs % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((diffMs % (1000*60*60)) / (1000*60));
+    const resultEl = document.getElementById('timeDifferenceResult');
+    resultEl.textContent = `${days} days, ${hours} hours, ${minutes} minutes`;
+    resultEl.classList.remove('hidden');
+  }
 </script>
 
   <!-- Block Time Calculator -->
