@@ -84,137 +84,132 @@
   }
 </script>
 
-  <!-- Block Time Calculator -->
-<div class="mb-4">
-  <h3 class="font-semibold mb-2">Block Time Calculator</h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div class="flex items-center gap-2">
-      <label for="blockOff" class="w-32">Block Off Time:</label>
-      <input id="blockOff" type="time" class="p-2 border rounded w-full" />
+  <!-- Clock & Time Calculators Section -->
+<section id="clock-container" class="mt-4 text-center"></section>
+
+<section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
+  <h2 class="text-xl font-bold mb-2">Time Calculators</h2>
+
+  <!-- Time Between Dates -->
+  <div class="mb-6">
+    <h3 class="font-semibold mb-2">Time Between Dates</h3>
+    <div class="flex flex-col sm:flex-row items-center gap-2 mb-2">
+      <input id="timeStart" type="datetime-local" class="p-2 border rounded flex-1" />
+      <input id="timeEnd" type="datetime-local" class="p-2 border rounded flex-1" />
+      <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
     </div>
-    <div class="flex items-center gap-2">
-      <label for="airborne" class="w-32">Airborne Time:</label>
-      <input id="airborne" type="time" class="p-2 border rounded w-full" />
-    </div>
-    <div class="flex items-center gap-2">
-      <label for="landing" class="w-32">Landing Time:</label>
-      <input id="landing" type="time" class="p-2 border rounded w-full" />
-    </div>
-    <div class="flex items-center gap-2">
-      <label for="blockOn" class="w-32">Block On Time:</label>
-      <input id="blockOn" type="time" class="p-2 border rounded w-full" />
-    </div>
+    <p id="timeDifferenceResult" class="mt-2 text-sm text-gray-700 hidden"></p>
   </div>
-  <button onclick="calculateBlockTime()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-    Calculate Block Time
-  </button>
-  <p id="blockTimeResult" class="mt-2 text-sm text-gray-800 hidden"></p>
-</div>
-function calculateBlockTime() {
-  const blockOff = document.getElementById("blockOff").value;
-  const airborne = document.getElementById("airborne").value;
-  const landing = document.getElementById("landing").value;
-  const blockOn = document.getElementById("blockOn").value;
 
-  if (!blockOff || !airborne || !landing || !blockOn) {
-    alert("Please fill in all time fields.");
-    return;
-  }
-
-  const parseTime = timeStr => {
-    const [hours, minutes] = timeStr.split(":").map(Number);
-    return new Date(2000, 0, 1, hours, minutes); // use fixed date
-  };
-
-  const calculateDuration = (start, end) => {
-    let diff = (end - start) / 60000;
-    if (diff < 0) diff += 1440; // adjust for overnight
-    const hours = Math.floor(diff / 60);
-    const minutes = diff % 60;
-    return { hours, minutes };
-  };
-
-  const blockOffTime = parseTime(blockOff);
-  const blockOnTime = parseTime(blockOn);
-  const airborneTime = parseTime(airborne);
-  const landingTime = parseTime(landing);
-
-  const blockDuration = calculateDuration(blockOffTime, blockOnTime);
-  const airDuration = calculateDuration(airborneTime, landingTime);
-
-  const result = `Block Time: ${blockDuration.hours}h ${blockDuration.minutes}m | Air Time: ${airDuration.hours}h ${airDuration.minutes}m`;
-  const resultParagraph = document.getElementById("blockTimeResult");
-  resultParagraph.textContent = result;
-  resultParagraph.classList.remove("hidden");
-}
-
+  <!-- Block Time Calculator -->
+  <div class="mb-4">
+    <h3 class="font-semibold mb-2">Block Time Calculator</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex items-center gap-2">
+        <label for="blockOff" class="w-32">Block Off Time:</label>
+        <input id="blockOff" type="time" class="p-2 border rounded flex-1" />
+      </div>
+      <div class="flex items-center gap-2">
+        <label for="airborne" class="w-32">Airborne Time:</label>
+        <input id="airborne" type="time" class="p-2 border rounded flex-1" />
+      </div>
+      <div class="flex items-center gap-2">
+        <label for="landing" class="w-32">Landing Time:</label>
+        <input id="landing" type="time" class="p-2 border rounded flex-1" />
+      </div>
+      <div class="flex items-center gap-2">
+        <label for="blockOn" class="w-32">Block On Time:</label>
+        <input id="blockOn" type="time" class="p-2 border rounded flex-1" />
+      </div>
+    </div>
+    <button onclick="calculateBlockTime()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate Block Time</button>
+    <p class="mt-2 text-xs text-gray-500">Input Your Block Time</p>
+    <p id="blockTimeResult" class="mt-2 text-sm text-gray-800 hidden"></p>
+  </div>
+</section>
 
 <script>
-  // Function to calculate the time difference between two dates
+  // Calculate Time Difference
   function calculateTimeDifference() {
     const start = new Date(document.getElementById('timeStart').value);
     const end = new Date(document.getElementById('timeEnd').value);
-    
-    if (!start || !end || start >= end) {
+    if (!start || !end || end <= start) {
       alert('Please provide valid start and end times.');
       return;
     }
-
-    const diff = Math.abs(end - start);
-    const hours = Math.floor(diff / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
-    
-    const resultText = `Time Difference: ${hours} hours and ${minutes} minutes`;
-    const resultElement = document.getElementById('timeDifferenceResult');
-    resultElement.textContent = resultText;
-    resultElement.classList.remove('hidden');
+    const diffMs = end - start;
+    const hours = Math.floor(diffMs / 3600000);
+    const minutes = Math.floor((diffMs % 3600000) / 60000);
+    const resultEl = document.getElementById('timeDifferenceResult');
+    resultEl.textContent = `Time Difference: ${hours}h ${minutes}m`;
+    resultEl.classList.remove('hidden');
   }
 
-  // Function to auto-fill the current date and time
-  function setCurrentTime() {
-    const now = new Date().toISOString().slice(0, -1);
-    document.getElementById('timeStart').value = now;
-    document.getElementById('timeEnd').value = now;
-  }
-
-  // Function to calculate block time and airborne time
+  // Calculate Block and Air Time with Day/Night split
   function calculateBlockTime() {
     const blockOff = document.getElementById('blockOff').value;
-    const blockOn = document.getElementById('blockOn').value;
     const airborne = document.getElementById('airborne').value;
     const landing = document.getElementById('landing').value;
-
-    if (!blockOff || !blockOn || !airborne || !landing) {
-      alert('Please fill in all fields.');
+    const blockOn = document.getElementById('blockOn').value;
+    if (!blockOff || !airborne || !landing || !blockOn) {
+      alert('Please fill in all time fields.');
       return;
     }
-
-    const blockTime = calculateTime(blockOff, blockOn);
-    const airTime = calculateTime(airborne, landing);
-
-    const resultText = `Total Block Time: ${blockTime.hours} hours, ${blockTime.minutes} minutes. Air Time: ${airTime.hours} hours, ${airTime.minutes} minutes.`;
-    const resultElement = document.getElementById('blockTimeResult');
-    resultElement.textContent = resultText;
-    resultElement.classList.remove('hidden');
-  }
-
-  // Helper function to calculate hours and minutes between two times
-  function calculateTime(start, end) {
-    const startTime = new Date(`1970-01-01T${start}:00`);
-    const endTime = new Date(`1970-01-01T${end}:00`);
-
-    if (startTime >= endTime) {
-      alert('Start time must be before end time.');
-      return { hours: 0, minutes: 0 };
+    // Parse times (use today date)
+    const today = new Date();
+    function parse(t) {
+      const [h, m] = t.split(':').map(Number);
+      return new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m);
     }
+    let off = parse(blockOff);
+    let on = parse(blockOn);
+    if (on <= off) on.setDate(on.getDate() + 1);
+    let ab = parse(airborne);
+    let ld = parse(landing);
+    if (ld <= ab) ld.setDate(ld.getDate() + 1);
 
-    const diff = Math.abs(endTime - startTime);
-    const hours = Math.floor(diff / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
+    // Get sunrise/sunset for location (Jakarta default)
+    const lat = -6.228;
+    const lon = 106.853;
+    const times = SunCalc.getTimes(today, lat, lon);
+    const sunrise = times.sunrise;
+    const sunset = times.sunset;
 
-    return { hours, minutes };
+    // Duration helper
+    function getDuration(start, end) {
+      return (end - start) / 60000; // minutes
+    }
+    function splitDayNight(start, end) {
+      const total = getDuration(start, end);
+      let night = 0;
+      // before sunrise
+      if (start < sunrise) night += getDuration(start, new Date(Math.min(end, sunrise)));
+      // after sunset
+      if (end > sunset) night += getDuration(new Date(Math.max(start, sunset)), end);
+      const day = total - night;
+      return { day: Math.floor(day), night: Math.floor(night) };
+    }
+    const blk = splitDayNight(off, on);
+    const air = splitDayNight(ab, ld);
+
+    // Format hours and minutes
+    function fmt(min) {
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      return `${h}h ${m}m`;
+    }
+    const resultText =
+      `Block Time: ${fmt(blk.day)} day, ${fmt(blk.night)} night | ` +
+      `Air Time: ${fmt(air.day)} day, ${fmt(air.night)} night`;
+    const resultEl = document.getElementById('blockTimeResult');
+    resultEl.textContent = resultText;
+    resultEl.classList.remove('hidden');
   }
 </script>
+
+<!-- Include SunCalc library for sunrise/sunset calculations -->
+<script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+
 </body>
 </html>
 
