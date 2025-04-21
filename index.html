@@ -53,7 +53,101 @@
       updateClock();
     });
 </script>
+<section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
+  <h2 class="text-xl font-bold mb-2">Time Calculators</h2>
 
+  <!-- Time Between Dates -->
+  <div class="mb-4">
+    <h3 class="font-semibold">Time Between Dates</h3>
+    <div class="flex flex-col sm:flex-row items-center gap-2">
+      <input id="timeStart" type="datetime-local" class="p-2 border rounded" />
+      <input id="timeEnd" type="datetime-local" class="p-2 border rounded" />
+      <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+      <button onclick="setCurrentTime()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Set Current Time</button>
+    </div>
+    <p id="timeDifferenceResult" class="mt-2 text-sm text-gray-700 hidden"></p>
+  </div>
+
+  <!-- Block Time Calculator -->
+  <div class="mb-4">
+    <h3 class="font-semibold">Block Time Calculator</h3>
+    <div class="flex flex-col sm:flex-row items-center gap-2">
+      <input id="blockOff" type="time" placeholder="Block Off Time" class="p-2 border rounded" />
+      <input id="blockOn" type="time" placeholder="Block On Time" class="p-2 border rounded" />
+      <input id="airborne" type="time" placeholder="Airborne Time" class="p-2 border rounded" />
+      <input id="landing" type="time" placeholder="Landing Time" class="p-2 border rounded" />
+      <button onclick="calculateBlockTime()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+    </div>
+    <p id="blockTimeResult" class="mt-2 text-sm text-gray-700 hidden"></p>
+  </div>
+</section>
+
+<script>
+  // Function to calculate the time difference between two dates
+  function calculateTimeDifference() {
+    const start = new Date(document.getElementById('timeStart').value);
+    const end = new Date(document.getElementById('timeEnd').value);
+    
+    if (!start || !end || start >= end) {
+      alert('Please provide valid start and end times.');
+      return;
+    }
+
+    const diff = Math.abs(end - start);
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    
+    const resultText = `Time Difference: ${hours} hours and ${minutes} minutes`;
+    const resultElement = document.getElementById('timeDifferenceResult');
+    resultElement.textContent = resultText;
+    resultElement.classList.remove('hidden');
+  }
+
+  // Function to auto-fill the current date and time
+  function setCurrentTime() {
+    const now = new Date().toISOString().slice(0, -1);
+    document.getElementById('timeStart').value = now;
+    document.getElementById('timeEnd').value = now;
+  }
+
+  // Function to calculate block time and airborne time
+  function calculateBlockTime() {
+    const blockOff = document.getElementById('blockOff').value;
+    const blockOn = document.getElementById('blockOn').value;
+    const airborne = document.getElementById('airborne').value;
+    const landing = document.getElementById('landing').value;
+
+    if (!blockOff || !blockOn || !airborne || !landing) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    const blockTime = calculateTime(blockOff, blockOn);
+    const airTime = calculateTime(airborne, landing);
+
+    const resultText = `Total Block Time: ${blockTime.hours} hours, ${blockTime.minutes} minutes. Air Time: ${airTime.hours} hours, ${airTime.minutes} minutes.`;
+    const resultElement = document.getElementById('blockTimeResult');
+    resultElement.textContent = resultText;
+    resultElement.classList.remove('hidden');
+  }
+
+  // Helper function to calculate hours and minutes between two times
+  function calculateTime(start, end) {
+    const startTime = new Date(`1970-01-01T${start}:00`);
+    const endTime = new Date(`1970-01-01T${end}:00`);
+
+    if (startTime >= endTime) {
+      alert('Start time must be before end time.');
+      return { hours: 0, minutes: 0 };
+    }
+
+    const diff = Math.abs(endTime - startTime);
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+
+    return { hours, minutes };
+  }
+</script>
 </body>
 </html>
 
