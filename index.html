@@ -16,39 +16,43 @@
   </header>
 
   <!-- Clock Script -->
-  <script>
-    // Fetch and inject the clock.html content
-    fetch('clock.html')
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('clock-container').innerHTML = html;
+<script>
+  // Fetch and inject the clock.html content
+  fetch('clock.html')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('clock-container').innerHTML = html;
 
-        // Start the clock after the content is loaded
-        function updateClock() {
-          const now = new Date();
+      // Start the clock after the content is loaded
+      function updateClock() {
+        const now = new Date();
 
-          // Local Date, Day, and Time
-          const localDate = now.toLocaleDateString();
-          const localDay = now.toLocaleDateString(undefined, { weekday: 'long' }); // Day of the week
-          const localTime = now.toLocaleTimeString();
-          
-          // UTC Date, Day, and Time
-          const utcDate = now.toISOString().slice(0, 10); // Extract YYYY-MM-DD
-          const utcDay = new Date(now.toISOString()).toLocaleDateString(undefined, { weekday: 'long', timeZone: 'UTC' });
-          const utcTime = now.toISOString().slice(11, 19); // Extract HH:MM:SS
-
-          // Update the placeholders
-          document.getElementById('local-date').textContent = `Local Date: ${localDay}, ${localDate}`;
-          document.getElementById('local-time').textContent = `Local Time: ${localTime}`;
-          document.getElementById('utc-date').textContent = `UTC Date: ${utcDay}, ${utcDate}`;
-          document.getElementById('utc-time').textContent = `UTC Time: ${utcTime}`;
+        // Helper function to format numbers with leading zero
+        function pad(n) {
+          return n < 10 ? '0' + n : n;
         }
 
-        // Update every second
-        setInterval(updateClock, 1000);
-        updateClock();
-      });
-  </script>
+        // Local time details
+        const localDay = now.toLocaleDateString(undefined, { weekday: 'long' });
+        const localDate = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
+        const localTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+        // UTC time details
+        const utc = new Date(now.toUTCString().slice(0, -4)); // remove GMT
+        const utcDay = utc.toLocaleDateString(undefined, { weekday: 'long', timeZone: 'UTC' });
+        const utcDate = `${pad(utc.getDate())}-${pad(utc.getMonth() + 1)}-${utc.getFullYear()}`;
+        const utcTime = `${pad(utc.getHours())}:${pad(utc.getMinutes())}:${pad(utc.getSeconds())}Z`;
+
+        // Update the placeholders
+        document.getElementById('local-time').textContent = `Local Time : ${localDay}, ${localDate} ${localTime}`;
+        document.getElementById('utc-time').textContent = `UTC : ${utcDay}, ${utcDate} ${utcTime}`;
+      }
+
+      // Update every second
+      setInterval(updateClock, 1000);
+      updateClock();
+    });
+</script>
 
 </body>
 </html>
