@@ -85,17 +85,68 @@
 </script>
 
   <!-- Block Time Calculator -->
-  <div class="mb-4">
-    <h3 class="font-semibold">Block Time Calculator</h3>
-    <div class="flex flex-col sm:flex-row items-center gap-2">
-      <input id="blockOff" type="time" value="Block Off Time" class="p-2 border rounded" />
-<input id="airborne" type="time" value="Airborne Time" class="p-2 border rounded" />
-<input id="landing" type="time" value="Landing Time" class="p-2 border rounded" />
-<input id="blockOn" type="time" value="Block On Time" class="p-2 border rounded" />
+<div class="mb-4">
+  <h3 class="font-semibold mb-2">Block Time Calculator</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex items-center gap-2">
+      <label for="blockOff" class="w-32">Block Off Time:</label>
+      <input id="blockOff" type="time" class="p-2 border rounded w-full" />
     </div>
-    <p id="blockTimeResult" class="mt-2 text-sm text-black-700 hidden"></p>
+    <div class="flex items-center gap-2">
+      <label for="airborne" class="w-32">Airborne Time:</label>
+      <input id="airborne" type="time" class="p-2 border rounded w-full" />
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="landing" class="w-32">Landing Time:</label>
+      <input id="landing" type="time" class="p-2 border rounded w-full" />
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="blockOn" class="w-32">Block On Time:</label>
+      <input id="blockOn" type="time" class="p-2 border rounded w-full" />
+    </div>
   </div>
-</section>
+  <button onclick="calculateBlockTime()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Calculate Block Time
+  </button>
+  <p id="blockTimeResult" class="mt-2 text-sm text-gray-800 hidden"></p>
+</div>
+function calculateBlockTime() {
+  const blockOff = document.getElementById("blockOff").value;
+  const airborne = document.getElementById("airborne").value;
+  const landing = document.getElementById("landing").value;
+  const blockOn = document.getElementById("blockOn").value;
+
+  if (!blockOff || !airborne || !landing || !blockOn) {
+    alert("Please fill in all time fields.");
+    return;
+  }
+
+  const parseTime = timeStr => {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return new Date(2000, 0, 1, hours, minutes); // use fixed date
+  };
+
+  const calculateDuration = (start, end) => {
+    let diff = (end - start) / 60000;
+    if (diff < 0) diff += 1440; // adjust for overnight
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+    return { hours, minutes };
+  };
+
+  const blockOffTime = parseTime(blockOff);
+  const blockOnTime = parseTime(blockOn);
+  const airborneTime = parseTime(airborne);
+  const landingTime = parseTime(landing);
+
+  const blockDuration = calculateDuration(blockOffTime, blockOnTime);
+  const airDuration = calculateDuration(airborneTime, landingTime);
+
+  const result = `Block Time: ${blockDuration.hours}h ${blockDuration.minutes}m | Air Time: ${airDuration.hours}h ${airDuration.minutes}m`;
+  const resultParagraph = document.getElementById("blockTimeResult");
+  resultParagraph.textContent = result;
+  resultParagraph.classList.remove("hidden");
+}
 
 
 <script>
