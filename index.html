@@ -56,17 +56,38 @@
 <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
   <h2 class="text-xl font-bold mb-2">Time Calculators</h2>
 
-  <!-- Time Between Dates -->
-  <div class="mb-4">
-    <h3 class="font-semibold">Time Between Dates</h3>
-    <div class="flex flex-col sm:flex-row items-center gap-2">
-      <input id="timeStart" type="datetime-local" class="p-2 border rounded" />
-      <input id="timeEnd" type="datetime-local" class="p-2 border rounded" />
-      <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
-      <button onclick="setCurrentTime()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Set Current Time</button>
-    </div>
-    <p id="timeDifferenceResult" class="mt-2 text-sm text-gray-700 hidden"></p>
-  </div>
+  function calculateTimeDifference() {
+  const timeStart = document.getElementById("timeStart").value;
+  const timeEnd = document.getElementById("timeEnd").value;
+
+  if (!timeStart || !timeEnd) {
+    alert("Please select both start and end times.");
+    return;
+  }
+
+  const startDate = new Date(timeStart);
+  const endDate = new Date(timeEnd);
+
+  if (endDate < startDate) {
+    alert("End time must be after start time.");
+    return;
+  }
+
+  // Calculate the difference in milliseconds
+  const differenceInMilliseconds = endDate - startDate;
+
+  // Convert milliseconds to total minutes, hours, and days
+  const totalMinutes = Math.floor(differenceInMilliseconds / (1000 * 60));
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const remainingHours = totalHours % 24;
+  const minutes = totalMinutes % 60;
+
+  // Display the result
+  const resultParagraph = document.getElementById("timeDifferenceResult");
+  resultParagraph.textContent = `${days} days, ${remainingHours} hours, and ${minutes} minutes`;
+  resultParagraph.classList.remove("hidden");
+}
 
   <!-- Block Time Calculator -->
   <div class="mb-4">
