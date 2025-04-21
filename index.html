@@ -27,17 +27,21 @@
         function updateClock() {
           const now = new Date();
 
-          // Local Time and Date
+          // Local Date, Day, and Time
           const localDate = now.toLocaleDateString();
+          const localDay = now.toLocaleDateString(undefined, { weekday: 'long' }); // Day of the week
           const localTime = now.toLocaleTimeString();
           
-          // UTC Time and Date
-          const utcDate = now.toISOString().slice(0, 10); // Extract DD-MM-YYY from ISO string
-          const utcTime = now.toISOString().slice(11, 19); // Extract HH:MM:SS from ISO string
+          // UTC Date, Day, and Time
+          const utcDate = now.toISOString().slice(0, 10); // Extract YYYY-MM-DD
+          const utcDay = new Date(now.toISOString()).toLocaleDateString(undefined, { weekday: 'long', timeZone: 'UTC' });
+          const utcTime = now.toISOString().slice(11, 19); // Extract HH:MM:SS
 
           // Update the placeholders
-          document.getElementById('local-time').textContent = `Local: ${localDate}, ${localTime}`;
-          document.getElementById('utc-time').textContent = `UTC: ${utcDate}, ${utcTime}`;
+          document.getElementById('local-date').textContent = `Local Date: ${localDay}, ${localDate}`;
+          document.getElementById('local-time').textContent = `Local Time: ${localTime}`;
+          document.getElementById('utc-date').textContent = `UTC Date: ${utcDay}, ${utcDate}`;
+          document.getElementById('utc-time').textContent = `UTC Time: ${utcTime}`;
         }
 
         // Update every second
