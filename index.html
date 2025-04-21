@@ -85,33 +85,23 @@
     </div>
   </section>
 
-  <!-- Windy Widget -->
+<!-- Windy Widget -->
 <section class="mt-8 max-w-6xl mx-auto px-4">
-  <h2 class="text-xl font-bold mb-2 text-center">Live Windy Map</h2>
-  <div id="windy-widget" class="floating-effect" style="width: 100%; height: 450px;"></div>
+  <h2 class="text-xl font-bold mb-2 text-center">Live Weather Radar</h2>
+  <div data-windywidget="map" 
+       data-thememode="white" 
+       data-zoom="7" 
+       data-lat="-6.228" 
+       data-lon="106.853" 
+       data-overlay="radar" 
+       data-menu="false" 
+       data-message="false" 
+       data-marker="true" 
+       data-type="map" 
+       style="width: 100%; height: 450px;">
+  </div>
+  <script async data-cfasync="false" src="https://windy.com/assets/widget/windy_widget.js"></script>
 </section>
-
-<script>
-  // Ambil lokasi pengguna
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      // Buat elemen widget
-      const widgetDiv = document.createElement('div');
-      widgetDiv.setAttribute('data-windywidget', 'map');
-      widgetDiv.setAttribute('data-thememode', 'white'); // atau 'dark'
-      widgetDiv.setAttribute('data-lat', lat);
-      widgetDiv.setAttribute('data-lon', lon);
-      widgetDiv.setAttribute('data-zoom', '7');
-      widgetDiv.setAttribute('data-overlay', 'radar');
-      widgetDiv.setAttribute('data-level', 'surface');
-      widgetDiv.setAttribute('data-type', 'map');
-      widgetDiv.style.width = '100%';
-      widgetDiv.style.height = '100%';
-
-      document.getElementById('windy-widget').appendChild(widgetDiv);
 
       // Load Windy widget script
       const script = document.createElement('script');
