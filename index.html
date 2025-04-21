@@ -88,14 +88,43 @@
   <!-- Windy Widget -->
 <section class="mt-8 max-w-6xl mx-auto px-4">
   <h2 class="text-xl font-bold mb-2 text-center">Live Windy Map</h2>
-  <iframe 
-    class="floating-effect"
-    width="100%" 
-    height="450" 
-    src="https://www.windy.com/-Weather-radar-radar?radar,-6.228,106.853,5" 
-    frameborder="0">
-  </iframe>
+  <div id="windy-widget" class="floating-effect" style="width: 100%; height: 450px;"></div>
 </section>
+
+<script>
+  // Ambil lokasi pengguna
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      // Buat elemen widget
+      const widgetDiv = document.createElement('div');
+      widgetDiv.setAttribute('data-windywidget', 'map');
+      widgetDiv.setAttribute('data-thememode', 'white'); // atau 'dark'
+      widgetDiv.setAttribute('data-lat', lat);
+      widgetDiv.setAttribute('data-lon', lon);
+      widgetDiv.setAttribute('data-zoom', '7');
+      widgetDiv.setAttribute('data-overlay', 'radar');
+      widgetDiv.setAttribute('data-level', 'surface');
+      widgetDiv.setAttribute('data-type', 'map');
+      widgetDiv.style.width = '100%';
+      widgetDiv.style.height = '100%';
+
+      document.getElementById('windy-widget').appendChild(widgetDiv);
+
+      // Load Windy widget script
+      const script = document.createElement('script');
+      script.src = 'https://windy.com/assets/widget/windy_widget.js';
+      script.async = true;
+      document.body.appendChild(script);
+    },
+    (error) => {
+      document.getElementById('windy-widget').innerHTML = 'Gagal mendapatkan lokasi pengguna.';
+      console.error("Geolocation error:", error);
+    }
+  );
+</script>
 
 <!-- Add this style block to your CSS -->
 <style>
