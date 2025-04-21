@@ -46,20 +46,24 @@
         // Update the placeholders
         document.getElementById('local-time').textContent = `Local Time : ${localDay}, ${localDate} ${localTime}`;
         document.getElementById('utc-time').textContent = `UTC : ${utcDay}, ${utcDate} ${utcTime}`;
-      }
+      
 
       // Update every second
       setInterval(updateClock, 1000);
       updateClock();
     
-    <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
+    <section>
+       <!-- HTML Section -->
+<section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
   <h2 class="text-xl font-bold mb-2">Time Calculators</h2>
   <div class="mb-4">
     <h3 class="font-semibold">Time Between Dates</h3>
     <div class="flex flex-col sm:flex-row items-center gap-2">
       <input id="timeStart" type="datetime-local" class="p-2 border rounded" />
       <input id="timeEnd" type="datetime-local" class="p-2 border rounded" />
-      <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+      <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Calculate
+      </button>
     </div>
     <p id="timeDifferenceResult" class="mt-2 text-sm text-gray-700 hidden"></p>
   </div>
@@ -70,6 +74,7 @@
     const timeStart = document.getElementById("timeStart").value;
     const timeEnd = document.getElementById("timeEnd").value;
 
+    // Check if both start and end times are provided
     if (!timeStart || !timeEnd) {
       alert("Please select both start and end times.");
       return;
@@ -78,26 +83,25 @@
     const startDate = new Date(timeStart);
     const endDate = new Date(timeEnd);
 
-    if (endDate < startDate) {
+    // Validate that the end time is after the start time
+    if (endDate <= startDate) {
       alert("End time must be after start time.");
       return;
     }
 
-    // Calculate the difference in milliseconds
+    // Calculate the time difference in milliseconds
     const differenceInMilliseconds = endDate - startDate;
 
-    // Convert milliseconds to total minutes, hours, and days
-    const totalMinutes = Math.floor(differenceInMilliseconds / (1000 * 60));
-    const totalHours = Math.floor(totalMinutes / 60);
-    const days = Math.floor(totalHours / 24);
-    const remainingHours = totalHours % 24;
-    const minutes = totalMinutes % 60;
+    // Convert milliseconds to days, hours, and minutes
+    const days = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((differenceInMilliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
 
     // Display the result
     const resultParagraph = document.getElementById("timeDifferenceResult");
-    resultParagraph.textContent = `${days} days, ${remainingHours} hours, and ${minutes} minutes`;
+    resultParagraph.textContent = `${days} days, ${hours} hours, and ${minutes} minutes`;
     resultParagraph.classList.remove("hidden");
-  }
+  
 </script>
 
   <!-- Block Time Calculator -->
