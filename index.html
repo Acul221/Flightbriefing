@@ -10,8 +10,8 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-  <!-- Header -->
-<header class="flex flex-col items-center justify-center min-h-screen text-center">
+<!-- Header -->
+<header class="flex flex-col items-center justify-center min-h-screen text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
   <h1 class="text-5xl font-extrabold">Briefing Dashboard</h1>
   <p class="text-2xl font-semibold">Welcome Captain</p>
   <p class="text-3xl md:text-4xl font-bold italic">Proper Preparation Prevents Poor Performance</p>
@@ -21,6 +21,44 @@
     <div id="local-time">Local Time: --</div>
     <div id="utc-time">UTC Time: --</div>
   </div>
+</header>
+
+<!-- Weather Narrative Section -->
+<section class="p-4 mt-6 max-w-4xl mx-auto bg-white rounded-xl shadow">
+  <h2 class="text-xl font-bold mb-2">Weather Summary</h2>
+  <p class="text-sm text-gray-600 mb-4">Current weather condition based on your location</p>
+  <p id="weatherNarrative" class="text-gray-800 italic">Fetching weather summary...</p>
+</section>
+
+<script>
+  async function fetchWeatherNarrative() {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const url = `https://avwx.rest/api/metar/${lat},${lon}`;
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
+            Accept: "application/json"
+          }
+        });
+        const data = await res.json();
+        const conditions = data?.sanitized || "No data available.";
+        document.getElementById('weatherNarrative').textContent = conditions;
+      } catch (err) {
+        document.getElementById('weatherNarrative').textContent = "Unable to retrieve weather narrative.";
+      }
+    }, () => {
+      document.getElementById('weatherNarrative').textContent = "Location access denied.";
+    });
+  }
+  fetchWeatherNarrative();
+</script>
+
 </header>
  <!-- Time Between Dates Section -->
 <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
