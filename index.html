@@ -49,6 +49,8 @@
   async function generateWeatherNarrative() {
     const dest = document.getElementById('destAirport').value.trim().toUpperCase();
     const alt = document.getElementById('altAirport').value.trim().toUpperCase();
+    const narrativeBox = document.getElementById('weatherNarrative');
+    narrativeBox.textContent = 'Generating analysis...';
 
     const fetchMetar = async (icao) => {
       const url = `https://avwx.rest/api/metar/${icao}`;
@@ -140,27 +142,30 @@
       narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${altMetar.sanitized}\nTAF: ${altTaf}\nSIGMET: ${altSigmet}`;
     }
 
-    const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer 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`
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are an aviation weather assistant. Analyze the following METAR and TAF data." },
-          { role: "user", content: narrative }
-        ]
-      })
-    });
+    try {
+      const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer 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`
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are an aviation weather assistant. Analyze the following METAR and TAF data." },
+            { role: "user", content: narrative }
+          ]
+        })
+      });
 
-    const gptData = await gptResponse.json();
-    const aiNarrative = gptData.choices?.[0]?.message?.content || "No analysis available.";
+      const gptData = await gptResponse.json();
+      const aiNarrative = gptData.choices?.[0]?.message?.content || "No analysis available.";
+      narrative += `\n\n🧠 AI Reasoning:\n${aiNarrative}`;
+    } catch (error) {
+      narrative += '\n\n⚠️ AI reasoning unavailable.';
+    }
 
-    narrative += `\n\n🧠 AI Reasoning:\n${aiNarrative}`;
-
-    document.getElementById('weatherNarrative').textContent = narrative;
+    narrativeBox.textContent = narrative;
   }
 
   function fetchWeatherNarrative() {
@@ -173,7 +178,6 @@
   }
   fetchWeatherNarrative();
 </script>
-
 </body>
 </html>
 
