@@ -71,7 +71,10 @@
         const data = await res.json();
         const wind = data.wind;
         const pressure = data.main.pressure;
-        return `Wind speed ${wind.speed} m/s from ${wind.deg}°, pressure ${pressure} hPa`;
+        const clouds = data.weather[0].description;
+        const temp = data.main.temp;
+        const visibility = data.visibility;
+        return `Temperature ${temp}°C, ${clouds}, wind ${wind.speed} m/s from ${wind.deg}°, pressure ${pressure} hPa, visibility ${visibility} m.`;
       } catch (err) {
         return `Unable to fetch weather data.`;
       }
@@ -88,7 +91,7 @@
 
     if (location) {
       const weatherPattern = await fetchOWMInfo(location.latitude, location.longitude);
-      narrative += `\n\n🌬️ Wind & Pressure: ${weatherPattern}`;
+      narrative += `\n\n🌦️ ${weatherPattern}`;
     } else {
       narrative += `\n\n⚠️ Location data not available.`;
     }
@@ -108,6 +111,13 @@
       narrative += `\n\n🌧️ Rainfall reported.`;
     } else if (narrative.includes("FG") || narrative.includes("BR")) {
       narrative += `\n\n🌫️ Fog or mist reducing visibility.`;
+    }
+
+    // GPT-style reasoning simulation (basic logic)
+    if (narrative.includes("low pressure")) {
+      narrative += `\n\n🧠 This weather may be influenced by a low-pressure system, possibly causing unstable air and convective activity.`;
+    } else if (narrative.includes("high pressure")) {
+      narrative += `\n\n🧠 High-pressure system likely contributing to calm and stable conditions.`;
     }
 
     document.getElementById('weatherNarrative').textContent = narrative;
