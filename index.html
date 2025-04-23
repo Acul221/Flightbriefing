@@ -40,10 +40,32 @@
     const dest = document.getElementById('destAirport').value.trim().toUpperCase();
     const alt = document.getElementById('altAirport').value.trim().toUpperCase();
 
-    // Simulated AI reasoning based on destination/alternate input
-    let narrative = `Based on your location, the weather is fair with visibility above 10km and scattered clouds. `;
-    if (dest) narrative += `Destination airport ${dest} is currently experiencing light winds and no significant weather. `;
-    if (alt) narrative += `Alternate airport ${alt} remains a suitable backup with clear skies reported.`;
+    let narrative = `Based on your location, the weather is fair with visibility above 10km and scattered clouds.`;
+
+    const fetchMetar = async (icao) => {
+      const url = `https://avwx.rest/api/metar/${icao}`;
+      try {
+        const res = await fetch(url, {
+          headers: {
+            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
+            Accept: "application/json"
+          }
+        });
+        const data = await res.json();
+        return data.sanitized || 'No METAR data';
+      } catch (err) {
+        return 'Unable to fetch METAR data';
+      }
+    };
+
+    if (dest) {
+      const destMetar = await fetchMetar(dest);
+      narrative += `\n\nDestination (${dest}): ${destMetar}`;
+    }
+    if (alt) {
+      const altMetar = await fetchMetar(alt);
+      narrative += `\n\nAlternate (${alt}): ${altMetar}`;
+    }
 
     document.getElementById('weatherNarrative').textContent = narrative;
   }
