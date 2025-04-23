@@ -56,7 +56,23 @@
       }
     };
 
+    const fetchWindyInfo = async (lat, lon) => {
+      return `Wind patterns and pressure system not yet integrated. Coordinates: ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+    };
+
+    const location = await new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve(pos.coords),
+        () => resolve(null)
+      );
+    });
+
     let narrative = `Based on your location, the weather is currently fair. Visibility is generally good with minor scattered clouds.`;
+
+    if (location) {
+      const windPattern = await fetchWindyInfo(location.latitude, location.longitude);
+      narrative += `\n\n📍 Wind & Pressure: ${windPattern}`;
+    }
 
     if (dest) {
       const destMetar = await fetchMetar(dest);
@@ -67,7 +83,6 @@
       narrative += `\n\nAlternate (${alt}): ${altMetar}`;
     }
 
-    // Simple reasoning placeholder (to be replaced with real logic or AI)
     if (narrative.includes("TS") || narrative.includes("CB")) {
       narrative += `\n\n⚠️ Significant weather phenomenon detected: possible thunderstorms or cumulonimbus clouds.`;
     } else if (narrative.includes("RA")) {
@@ -79,9 +94,9 @@
     document.getElementById('weatherNarrative').textContent = narrative;
   }
 
-  async function fetchWeatherNarrative() {
+  function fetchWeatherNarrative() {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(async (position) => {
+    navigator.geolocation.getCurrentPosition(() => {
       generateWeatherNarrative();
     }, () => {
       document.getElementById('weatherNarrative').textContent = "Location access denied.";
