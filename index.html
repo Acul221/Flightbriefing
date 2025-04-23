@@ -1,342 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Header -->
-<header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md py-8 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-4xl mx-auto text-center space-y-4">
-    <h1 class="text-5xl font-extrabold">Briefing Dashboard</h1>
-    <p class="text-2xl font-semibold">Welcome Captain</p>
-    <p class="text-3xl md:text-4xl font-bold italic">
-      Proper Preparation Prevent Poor Performance
-    </p>
-  </div>
-</header>
-
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Briefing Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+  <style>
+    .floating-effect { border-radius:12px; box-shadow:0 8px 15px rgba(0,0,0,0.2); transition:transform .3s,box-shadow .3s; }
+    .floating-effect:hover { transform:translateY(-10px); box-shadow:0 15px 25px rgba(0,0,0,0.3); }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
   <!-- Header -->
-  <header class="bg-white shadow-md p-4">
-    <h1 class="text-4xl font-bold text-center">Briefing Dashboard</h1>
-    <!-- Clock Display -->
-    <div id="clock-container" class="mt-4 text-center font-mono text-lg">
-      <div id="local-time">Local Time: --</div>
-      <div id="utc-time">UTC Time: --</div>
+  <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center space-y-2">
+      <h1 class="text-5xl font-extrabold">Briefing Dashboard</h1>
+      <p class="text-2xl font-semibold">Welcome Captain</p>
+      <p class="text-3xl md:text-4xl font-extrabold italic">Proper Preparation Prevents Poor Performance</p>
+      <div id="clock-container" class="mt-4 font-mono text-lg space-y-1">
+        <div id="local-time">Local Time: --</div>
+        <div id="utc-time">UTC Time: --</div>
+      </div>
     </div>
   </header>
 
- <!-- Time Between Dates Section -->
-<section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <div class="bg-white p-4 rounded-xl shadow w-full">
-    <h2 class="text-xl font-bold mb-4">Time Between Dates</h2>
-    <p class="text-sm text-gray-500 mb-2">Calculate your DMI remaining day</p>
-    <div class="flex flex-col sm:flex-row items-center gap-2">
-      <input id="timeStart" type="datetime-local" class="p-2 border rounded flex-1 w-full" />
-      <input id="timeEnd" type="datetime-local" class="p-2 border rounded flex-1 w-full" />
-      <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto">Calculate</button>
-    </div>
-    <p id="timeDifferenceResult" class="mt-2 text-sm text-gray-700 hidden"></p>
-  </div>
-
-  <!-- Block Time Calculator Section -->
-  <div class="bg-white p-4 rounded-xl shadow w-full">
-    <h2 class="text-xl font-bold mb-4">Block Time Calculator</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div class="flex items-center gap-2">
-        <label for="blockOff" class="w-32">Block Off Time:</label>
-        <input id="blockOff" type="time" class="p-2 border rounded flex-1" />
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Time Between Dates & Block Time side by side on desktop -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Time Between Dates Section -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-bold mb-2">Time Between Dates</h2>
+        <p class="text-sm text-gray-500 mb-4">Calculate your DMI remaining day</p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="timeStart" type="datetime-local" class="p-2 border rounded flex-1" required />
+          <input id="timeEnd" type="datetime-local" class="p-2 border rounded flex-1" required />
+          <button onclick="calculateTimeDifference()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+        </div>
+        <p id="timeDifferenceResult" class="mt-3 text-sm text-gray-700 hidden"></p>
       </div>
-      <div class="flex items-center gap-2">
-        <label for="airborne" class="w-32">Airborne Time:</label>
-        <input id="airborne" type="time" class="p-2 border rounded flex-1" />
+      <!-- Block Time Calculator Section -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-bold mb-2">Block Time Calculator</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex items-center gap-2">
+            <label for="blockOff" class="w-32 font-medium">Block Off Time:</label>
+            <input id="blockOff" type="time" class="p-2 border rounded flex-1" required />
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="airborne" class="w-32 font-medium">Airborne Time:</label>
+            <input id="airborne" type="time" class="p-2 border rounded flex-1" required />
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="landing" class="w-32 font-medium">Landing Time:</label>
+            <input id="landing" type="time" class="p-2 border rounded flex-1" required />
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="blockOn" class="w-32 font-medium">Block On Time:</label>
+            <input id="blockOn" type="time" class="p-2 border rounded flex-1" required />
+          </div>
+        </div>
+        <button onclick="calculateBlockTime()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+        <p id="blockTimeResult" class="mt-3 text-sm text-gray-800 hidden"></p>
       </div>
-      <div class="flex items-center gap-2">
-        <label for="landing" class="w-32">Landing Time:</label>
-        <input id="landing" type="time" class="p-2 border rounded flex-1" />
+    </section>
+
+    <!-- TAF / METAR / NOTAM Lookup -->
+    <section class="bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-xl font-bold mb-2">TAF / METAR / NOTAM Lookup</h2>
+      <div class="flex flex-col sm:flex-row gap-2 items-center">
+        <input id="icaoInput" type="text" placeholder="ICAO (e.g., WIII)" class="flex-1 p-2 border rounded uppercase" />
+        <select id="dataType" class="p-2 border rounded">
+          <option value="TAF">TAF</option>
+          <option value="METAR">METAR</option>
+          <option value="NOTAM">NOTAM</option>
+        </select>
+        <button onclick="lookupData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Find</button>
       </div>
-      <div class="flex items-center gap-2">
-        <label for="blockOn" class="w-32">Block On Time:</label>
-        <input id="blockOn" type="time" class="p-2 border rounded flex-1" />
+      <pre id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></pre>
+      <p id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></p>
+    </section>
+
+    <!-- BMKG Maps & Windy Widgets -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl hover:bg-gray-700">BMKG Maps</a>
+          <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl hover:bg-gray-700">High Level SIGWX</a>
+        </div>
       </div>
-    </div>
-    <button onclick="calculateBlockTime()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Calculate Block Time</button>
-    <p class="mt-2 text-xs text-gray-500">Input your block and air time</p>
-    <p id="blockTimeResult" class="mt-2 text-sm text-gray-800 hidden"></p>
-  </div>
-</section>
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-bold mb-2 text-center">Live Weather Radar</h2>
+        <div data-windywidget="map" data-thememode="white" data-zoom="7" data-lat="-6.228" data-lon="106.853" data-overlay="radar" data-menu="false" data-message="false" data-marker="true" data-type="map" style="width:100%; height:300px;" class="floating-effect"></div>
+        <script async src="https://windy.com/assets/widget/windy_widget.js"></script>
+      </div>
+    </section>
 
-<!-- JavaScript Logic -->
-<script>
-  // Clock update
-  function updateClocks() {
-    const now = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    // Local
-    const localDay = now.toLocaleDateString(undefined, { weekday: 'long' });
-    const localDate = `${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}`;
-    const localTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-    // UTC
-    const utc = new Date(now.toISOString());
-    const utcDay = utc.toLocaleDateString(undefined, { weekday: 'long', timeZone: 'UTC' });
-    const utcDate = `${pad(utc.getDate())}-${pad(utc.getMonth()+1)}-${utc.getFullYear()}`;
-    const utcTime = `${pad(utc.getUTCHours())}:${pad(utc.getUTCMinutes())}:${pad(utc.getUTCSeconds())}Z`;
-    document.getElementById('local-time').textContent = `Local Time: ${localDay}, ${localDate} ${localTime}`;
-    document.getElementById('utc-time').textContent   = `UTC Time: ${utcDay}, ${utcDate} ${utcTime}`;
-  }
-  setInterval(updateClocks, 1000);
-  updateClocks();
+    <!-- INA-SIAM -->
+    <section class="bg-white rounded-xl shadow-md p-6 text-center">
+      <h2 class="text-xl font-bold mb-2">INA-SIAM</h2>
+      <iframe src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94" class="w-full h-64 rounded-xl floating-effect" frameborder="0"></iframe>
+    </section>
 
-  // Time Difference Calculator
-  function calculateTimeDifference() {
-    const start = new Date(document.getElementById('timeStart').value);
-    const end = new Date(document.getElementById('timeEnd').value);
-    if (isNaN(start) || isNaN(end) || end <= start) {
-      alert('Please provide valid start and end times.');
-      return;
-    }
-    const diffMs = end - start;
-    const days = Math.floor(diffMs / 86400000);
-    const hours = Math.floor((diffMs % 86400000) / 3600000);
-    const minutes = Math.floor((diffMs % 3600000) / 60000);
-    const out = `${days}d ${hours}h ${minutes}m`;
-    const el = document.getElementById('timeDifferenceResult');
-    el.textContent = out;
-    el.classList.remove('hidden');
-  }
+    <!-- Quick Links -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Quick Link Cards -->
+      <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow text-center">
+        <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank">
+          <img src="https://github.com/Acul221/Flightbriefing/blob/main/superlink-icon.png?raw=true" alt="SuperLink" class="w-24 h-24 mx-auto mb-4">
+          <h3 class="font-semibold text-lg">SuperLink</h3>
+        </a>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow text-center">
+        <a href="https://ecrew.lionair.com/ecrew" target="_blank">
+          <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/1200x630wa-removebg-preview.png" alt="eCrew" class="w-24 h-24 mx-auto mb-4">
+          <h3 class="font-semibold text-lg">eCrew</h3>
+        </a>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow text-center">
+        <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit" target="_blank">
+          <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/11888220.png" alt="DMI" class="w-24 h-24 mx-auto mb-4">
+          <h3 class="font-semibold text-lg">DMI</h3>
+        </a>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow text-center">
+        <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank">
+          <img src="images/epostflight-icon.png" alt="E-Post Flight" class="w-24 h-24 mx-auto mb-4">
+          <h3 class="font-semibold text-lg">E-Post Flight</h3>
+        </a>
+      </div>
+    </section>
+  </main>
 
-  // Block & Air Time Calculator
-  function calculateBlockTime() {
-    const parseTime = (id) => {
-      const v = document.getElementById(id).value;
-      if (!v) return null;
-      const [h, m] = v.split(':').map(Number);
-      const d = new Date();
-      d.setHours(h, m, 0, 0);
-      return d;
-    };
-
-    const diffMinutes = (start, end) => {
-      if (end < start) end.setDate(end.getDate() + 1);
-      return Math.round((end - start) / 60000);
-    };
-
-    const blockOff = parseTime('blockOff');
-    const airborne = parseTime('airborne');
-    const landing = parseTime('landing');
-    const blockOn = parseTime('blockOn');
-
-    if (!blockOff || !airborne || !landing || !blockOn) {
-      alert('Please fill all time fields.');
-      return;
-    }
-
-    const blockTime = diffMinutes(blockOff, blockOn);
-    const airTime = diffMinutes(airborne, landing);
-
-    const format = (minutes) => `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
-    const output = `Block Time: ${format(blockTime)} | Air Time: ${format(airTime)}`;
-    const el = document.getElementById('blockTimeResult');
-    el.textContent = output;
-    el.classList.remove('hidden');
-  }
-</script>
-</body>
-</html>
-
-<!-- TAF / METAR / NOTAM -->
-  <section class="p-4 bg-white rounded-xl shadow-md mt-6 max-w-xl mx-auto">
-    <h2 class="text-xl font-bold mb-2">TAF / METAR / NOTAM Lookup</h2>
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-      <input id="icaoInput" type="text" placeholder="Enter ICAO (e.g., WIII)" class="flex-1 p-2 border rounded" />
-      <select id="dataType" class="p-2 border rounded">
-        <option value="TAF">TAF</option>
-        <option value="METAR">METAR</option>
-        <option value="NOTAM">NOTAM</option>
-      </select>
-      <button onclick="lookupData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">FIND</button>
-    </div>
-    <div id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></div>
-    <div id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></div>
-  </section> 
-<!-- BMKG MAPS External Link Card -->
-  <section class="mt-8 max-w-xl mx-auto px-4">
-    <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
-    <div class="grid grid-cols-2 gap-4">
-      <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
-        Open BMKG MAPS Website
-      </a>
-      <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
-        High Level SIGWX
-      </a>
-    </div>
-  </section>
-
-  <!-- Windy Widget -->
-<section class="mt-8 max-w-6xl mx-auto px-4">
-  <h2 class="text-xl font-bold mb-2 text-center">Live Windy Map</h2>
-  <iframe 
-    class="floating-effect"
-    width="100%" 
-    height="450" 
-    src="https://embed.windy.com/embed2.html" 
-    frameborder="0">
-  </iframe>
-</section>
-
-<!-- Add this style block to your CSS -->
-<style>
-  .floating-effect {
-    border-radius: 12px; /* Rounded corners */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow for floating effect */
-    transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
-  }
-
-  .floating-effect:hover {
-    transform: translateY(-10px); /* Slight upward movement */
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
-  }
-</style>
- 
-<!-- INA-SIAM BMKG -->
-<section class="mt-8 max-w-6xl mx-auto px-4">
-  <h2 class="text-xl font-bold mb-2 text-center">INA-SIAM</h2>
-  <iframe
-    class="floating-effect"
-    width="100%"
-    height="450"
-    src="https://inasiam.bmkg.go.id/#4.17/-3.62/105.94"
-    frameborder="0">
-  </iframe>
-</section>
-
-<!-- Add this style block to your CSS -->
-<style>
-  .floating-effect {
-    border-radius: 12px; /* Rounded corners */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow for floating effect */
-    transition: transform 0.3s, box-shadow 0.3s; /* Smooth animation */
-  }
-
-  .floating-effect:hover {
-    transform: translateY(-10px); /* Slight upward movement */
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
-  }
-</style>
-
-<!-- Quick Links -->
-  <section class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-      <a href="https://application.lionair.com/saj/crewlink/Login.aspx" target="_blank" class="block p-6 text-center">
-        <img src="https://github.com/Acul221/Flightbriefing/blob/main/superlink-icon.png?raw=true" alt="Superlink Icon" class="w-45 h-32 mx-auto mb-4">
-        <h3 class="font-semibold text-lg text-gray-800">SuperLink</h3>
-        <p class="text-sm text-gray-600">Access the crew link login portal.</p>
-      </a>
-    </div>
-
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-      <a href="https://ecrew.lionair.com/ecrew" target="_blank" class="block p-6 text-center">
-        <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/1200x630wa-removebg-preview.png" alt="eCrew Icon" class="w-52 h-32 mx-auto mb-4">
-        <h3 class="font-semibold text-lg text-gray-800">eCrew</h3>
-        <p class="text-sm text-gray-600">Your Flight Schedule.</p>
-      </a>
-    </div>
-
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-      <a href="https://docs.google.com/spreadsheets/d/1T5eFF8FHhWwjYPVOhSCqKik3b4WVEPcKOonZ7R4PSD0/edit" target="_blank" class="block p-6 text-center">
-        <img src="https://raw.githubusercontent.com/Acul221/Flightbriefing/main/11888220.png" alt="DMI Icon" class="w-32 h-32 mx-auto mb-4">
-        <h3 class="font-semibold text-lg text-gray-800">DMI</h3>
-        <p class="text-sm text-gray-600">Track important data sheets.</p>
-      </a>
-    </div>
-
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-      <a href="https://app.lionairgroup.com:18010/epfaims/Login.aspx" target="_blank" class="block p-6 text-center">
-        <img src="images/epostflight-icon.png" alt="E-Post Flight Icon" class="w-32 h-32 mx-auto mb-4">
-        <h3 class="font-semibold text-lg text-gray-800">E-Post Flight</h3>
-        <p class="text-sm text-gray-600">Submit and manage post-flight reports.</p>
-      </a>
-    </div>
-
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-      <a href="https://staff.lionair.com" target="_blank" class="block p-6 text-center">
-        <img src="images/staffportal-icon.png" alt="Staff Portal Icon" class="w-32 h-32 mx-auto mb-4">
-        <h3 class="font-semibold text-lg text-gray-800">Staff Portal</h3>
-        <p class="text-sm text-gray-600">Access the staff portal for company updates.</p>
-      </a>
-    </div>
-    
-    <div class="bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow">
-      <a href="https://gaelidentityserver.gaelenlighten.com/core/login?signin=7cfcc9e47cae24ebf5756cd04910d6e3" target="_blank" class="block p-6 text-center">
-        <img src="images/staffportal-icon.png" alt="Staff Portal Icon" class="w-32 h-32 mx-auto mb-4">
-        <h3 class="font-semibold text-lg text-gray-800">Coruson</h3>
-        <p class="text-sm text-gray-600">Coruson Report Portal.</p>
-      </a>
-    </div>
-  </section>
-
-  
-
- 
   <!-- Footer -->
   <footer class="bg-gray-800 text-white text-center py-4">
-    <p>2025 | Flight Briefing Dashboard by Acul |indevelopment progress</p>
+    <p>2025 | Flight Briefing Dashboard by Acul | In Development</p>
   </footer>
 
-  <!-- Script lookupData -->
+  <!-- Scripts -->
   <script>
-    async function lookupData() {
-      const icao = document.getElementById("icaoInput").value.trim().toUpperCase();
-      const dataType = document.getElementById("dataType").value;
-      const resultBox = document.getElementById("resultBox");
-      const timestampBox = document.getElementById("timestamp");
-      const timestampValue = document.getElementById("timestampValue");
+    // Clock update
+    function updateClocks() {
+      const now = new Date(); const pad = n=>String(n).padStart(2,'0');
+      const localDay = now.toLocaleDateString(undefined,{weekday:'long'});
+      const localDate = `${pad(now.getDate())}-${pad(now.getMonth()+1)}-${now.getFullYear()}`;
+      const localTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      const utc = new Date(now.toISOString());
+      const utcDay = utc.toLocaleDateString(undefined,{weekday:'long',timeZone:'UTC'});
+      const utcDate = `${pad(utc.getDate())}-${pad(utc.getMonth()+1)}-${utc.getFullYear()}`;
+      const utcTime = `${pad(utc.getUTCHours())}:${pad(utc.getUTCMinutes())}:${pad(utc.getUTCSeconds())}Z`;
+      document.getElementById('local-time').textContent = `Local Time: ${localDay}, ${localDate} ${localTime}`;
+      document.getElementById('utc-time').textContent = `UTC Time: ${utcDay}, ${utcDate} ${utcTime}`;
+    }
+    setInterval(updateClocks,1000); updateClocks();
 
-      if (!icao) {
-        resultBox.textContent = "Please enter a valid ICAO code.";
-        resultBox.classList.remove("hidden");
-        return;
-      }
+    // Time Difference Calculator
+    function calculateTimeDifference(){
+      const s=new Date(document.getElementById('timeStart').value);
+      const e=new Date(document.getElementById('timeEnd').value);
+      if(isNaN(s)||isNaN(e)||e<=s){return alert('Please provide valid start and end times.');}
+      const d=e-s; const days=Math.floor(d/86400000),hrs=Math.floor((d%86400000)/3600000),mins=Math.floor((d%3600000)/60000);
+      const out=`${days}d ${hrs}h ${mins}m`;
+      const el=document.getElementById('timeDifferenceResult'); el.textContent=out; el.classList.remove('hidden');
+    }
 
-      resultBox.textContent = "Loading...";
-      resultBox.classList.remove("hidden");
-      timestampBox.classList.add("hidden");
+    // Block & Air Time Calculator
+    function calculateBlockTime(){
+      const toD=id=>{const v=document.getElementById(id).value.split(':').map(Number);const dt=new Date();dt.setHours(v[0],v[1],0,0);return dt};
+      const bOff=toD('blockOff'),ab=toD('airborne'),ld=toD('landing'),bOn=toD('blockOn');
+      if(!bOff||!ab||!ld||!bOn)return alert('Please fill all time fields.');
+      const diff=min=>{if(min<0)min+=1440;return min};
+      const toMin=d=>d.getHours()*60+d.getMinutes();
+      const blink=diff(toMin(bOn)-toMin(bOff)),al=diff(toMin(ld)-toMin(ab));
+      const fmt=m=>`${Math.floor(m/60)}h ${m%60}m`;
+      const out=`Block Time: ${fmt(blink)} | Air Time: ${fmt(al)}`;
+      const el=document.getElementById('blockTimeResult'); el.textContent=out; el.classList.remove('hidden');
+    }
 
-      try {
-        let url = "";
-        let headers = {};
-
-        if (dataType === 'NOTAM') {
-          url = `/.netlify/functions/notam?icao=${icao}`;
-        } else {
-          url = `https://avwx.rest/api/${dataType.toLowerCase()}/${icao}`;
-          headers = {
-            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
-            Accept: "application/json"
-          };
-        }
-
-        const response = await fetch(url, { headers });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch data. Please check ICAO or try again.");
-        }
-
-        const contentType = response.headers.get("content-type");
-        let text = "";
-
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          text = data.raw || JSON.stringify(data, null, 2);
-        } else {
-          text = await response.text();
-        }
-
-        resultBox.textContent = text;
-        const now = new Date();
-        timestampValue.textContent = now.toLocaleString();
-        timestampBox.classList.remove("hidden");
-
-      } catch (error) {
-        resultBox.textContent = error.message;
-      }
+    // TAF/METAR/NOTAM Lookup
+    async function lookupData(){
+      const icao=document.getElementById('icaoInput').value.trim().toUpperCase();
+      if(!icao)return alert('Enter ICAO code.');
+      const type=document.getElementById('dataType').value;
+      const res=await fetch(`https://avwx.rest/api/${type.toLowerCase()}/${icao}`,{headers:{Authorization:'Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c',Accept:'application/json'}});
+      if(!res.ok)return alert('Fetch failed');
+      const data=await res.json();
+      const out=data.raw||JSON.stringify(data,null,2);
+      const box=document.getElementById('resultBox'); box.textContent=out; box.classList.remove('hidden');
+      const ts=document.getElementById('timestampValue'); ts.textContent=new Date().toLocaleString(); document.getElementById('timestamp').classList.remove('hidden');
     }
   </script>
-
 </body>
 </html>
