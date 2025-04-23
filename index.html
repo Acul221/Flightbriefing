@@ -32,15 +32,13 @@
     <input id="altAirport" type="text" placeholder="Alternate ICAO (e.g., WARR)" class="p-2 border rounded w-full sm:w-1/2" />
     <button onclick="generateWeatherNarrative()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update Weather</button>
   </div>
-  <p id="weatherNarrative" class="text-gray-800 italic">Fetching weather summary...</p>
+  <p id="weatherNarrative" class="text-gray-800 italic whitespace-pre-line">Fetching weather summary...</p>
 </section>
 
 <script>
   async function generateWeatherNarrative() {
     const dest = document.getElementById('destAirport').value.trim().toUpperCase();
     const alt = document.getElementById('altAirport').value.trim().toUpperCase();
-
-    let narrative = `Based on your location, the weather is fair with visibility above 10km and scattered clouds.`;
 
     const fetchMetar = async (icao) => {
       const url = `https://avwx.rest/api/metar/${icao}`;
@@ -58,6 +56,8 @@
       }
     };
 
+    let narrative = `Based on your location, the weather is currently fair. Visibility is generally good with minor scattered clouds.`;
+
     if (dest) {
       const destMetar = await fetchMetar(dest);
       narrative += `\n\nDestination (${dest}): ${destMetar}`;
@@ -65,6 +65,15 @@
     if (alt) {
       const altMetar = await fetchMetar(alt);
       narrative += `\n\nAlternate (${alt}): ${altMetar}`;
+    }
+
+    // Simple reasoning placeholder (to be replaced with real logic or AI)
+    if (narrative.includes("TS") || narrative.includes("CB")) {
+      narrative += `\n\n⚠️ Significant weather phenomenon detected: possible thunderstorms or cumulonimbus clouds.`;
+    } else if (narrative.includes("RA")) {
+      narrative += `\n\n🌧️ Rain is currently observed in the area.`;
+    } else if (narrative.includes("BR") || narrative.includes("FG")) {
+      narrative += `\n\n🌫️ Reduced visibility due to mist or fog.`;
     }
 
     document.getElementById('weatherNarrative').textContent = narrative;
