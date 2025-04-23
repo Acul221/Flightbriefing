@@ -25,14 +25,22 @@
 
 <!-- Weather Narrative Section -->
 <section class="p-4 mt-6 max-w-4xl mx-auto bg-white rounded-xl shadow">
-  <h2 class="text-xl font-bold mb-2">Weather Summary</h2>
-  <p class="text-sm text-gray-600 mb-4">Current weather condition based on your location</p>
-  <div class="flex flex-col sm:flex-row gap-2 mb-4">
-    <input id="destAirport" type="text" placeholder="Destination ICAO (e.g., WIII)" class="p-2 border rounded w-full sm:w-1/2" />
-    <input id="altAirport" type="text" placeholder="Alternate ICAO (e.g., WARR)" class="p-2 border rounded w-full sm:w-1/2" />
+  <h2 class="text-xl font-bold mb-2">🛰️ Weather Summary</h2>
+  <p class="text-sm text-gray-600 mb-4">Automatically generated based on your location</p>
+  <div class="grid sm:grid-cols-2 gap-4 mb-4">
+    <div class="flex flex-col">
+      <label for="destAirport" class="text-sm text-gray-700 mb-1">Destination Airport (ICAO)</label>
+      <input id="destAirport" type="text" placeholder="e.g., WIII" class="p-2 border rounded w-full" />
+    </div>
+    <div class="flex flex-col">
+      <label for="altAirport" class="text-sm text-gray-700 mb-1">Alternate Airport (ICAO)</label>
+      <input id="altAirport" type="text" placeholder="e.g., WARR" class="p-2 border rounded w-full" />
+    </div>
+  </div>
+  <div class="text-right mb-4">
     <button onclick="generateWeatherNarrative()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update Weather</button>
   </div>
-  <p id="weatherNarrative" class="text-gray-800 italic whitespace-pre-line">Fetching weather summary...</p>
+  <div class="bg-gray-50 p-4 rounded border text-sm text-gray-800 whitespace-pre-line" id="weatherNarrative">Fetching weather summary...</div>
 </section>
 
 <script>
@@ -56,8 +64,8 @@
       }
     };
 
-    const fetchWindyInfo = async (lat, lon) => {
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=YOUR_OPENWEATHERMAP_API_KEY&units=metric`;
+    const fetchOWMInfo = async (lat, lon) => {
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=1e33da44f15aa3a57be99830ad01cd05&units=metric`;
       try {
         const res = await fetch(url);
         const data = await res.json();
@@ -65,7 +73,7 @@
         const pressure = data.main.pressure;
         return `Wind speed ${wind.speed} m/s from ${wind.deg}°, pressure ${pressure} hPa`;
       } catch (err) {
-        return `Unable to fetch wind data.`;
+        return `Unable to fetch weather data.`;
       }
     };
 
@@ -79,8 +87,8 @@
     let narrative = `📍 Weather at your location:`;
 
     if (location) {
-      const windPattern = await fetchWindyInfo(location.latitude, location.longitude);
-      narrative += `\n\n🌬️ Wind & Pressure: ${windPattern}`;
+      const weatherPattern = await fetchOWMInfo(location.latitude, location.longitude);
+      narrative += `\n\n🌬️ Wind & Pressure: ${weatherPattern}`;
     } else {
       narrative += `\n\n⚠️ Location data not available.`;
     }
@@ -115,7 +123,6 @@
   }
   fetchWeatherNarrative();
 </script>
-
 
 </body>
 </html>
