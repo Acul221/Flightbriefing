@@ -58,9 +58,25 @@
           }
         });
         const data = await res.json();
-        return data.sanitized || 'No METAR data';
+        return { raw: data.raw, sanitized: data.sanitized };
       } catch (err) {
-        return 'Unable to fetch METAR data';
+        return { raw: '', sanitized: 'Unable to fetch METAR data' };
+      }
+    };
+
+    const fetchTAF = async (icao) => {
+      const url = `https://avwx.rest/api/taf/${icao}`;
+      try {
+        const res = await fetch(url, {
+          headers: {
+            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
+            Accept: "application/json"
+          }
+        });
+        const data = await res.json();
+        return data.sanitized || 'No TAF available';
+      } catch (err) {
+        return 'Unable to fetch TAF data';
       }
     };
 
@@ -98,25 +114,25 @@
 
     if (dest) {
       const destMetar = await fetchMetar(dest);
-      narrative += `\n\n🛬 Destination (${dest}): ${destMetar}`;
+      const destTaf = await fetchTAF(dest);
+      narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${destMetar.sanitized}\nTAF: ${destTaf}`;
+      if (destMetar.raw.includes("CB") || destMetar.raw.includes("TS")) {
+        narrative += `\n⚠️ Thunderstorm or cumulonimbus detected at Destination (${dest}).`;
+      }
     }
     if (alt) {
       const altMetar = await fetchMetar(alt);
-      narrative += `\n\n🛬 Alternate (${alt}): ${altMetar}`;
-    }
-
-    if (narrative.includes("TS") || narrative.includes("CB")) {
-      narrative += `\n\n⚠️ Thunderstorm or cumulonimbus detected.`;
-    } else if (narrative.includes("RA")) {
-      narrative += `\n\n🌧️ Rainfall reported.`;
-    } else if (narrative.includes("FG") || narrative.includes("BR")) {
-      narrative += `\n\n🌫️ Fog or mist reducing visibility.`;
+      const altTaf = await fetchTAF(alt);
+      narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${altMetar.sanitized}\nTAF: ${altTaf}`;
+      if (altMetar.raw.includes("CB") || altMetar.raw.includes("TS")) {
+        narrative += `\n⚠️ Thunderstorm or cumulonimbus detected at Alternate (${alt}).`;
+      }
     }
 
     // GPT-style reasoning simulation (basic logic)
-    if (narrative.includes("low pressure")) {
+    if (narrative.toLowerCase().includes("low pressure")) {
       narrative += `\n\n🧠 This weather may be influenced by a low-pressure system, possibly causing unstable air and convective activity.`;
-    } else if (narrative.includes("high pressure")) {
+    } else if (narrative.toLowerCase().includes("high pressure")) {
       narrative += `\n\n🧠 High-pressure system likely contributing to calm and stable conditions.`;
     }
 
@@ -133,7 +149,6 @@
   }
   fetchWeatherNarrative();
 </script>
-
 </body>
 </html>
 
