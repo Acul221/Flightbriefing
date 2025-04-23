@@ -57,7 +57,16 @@
     };
 
     const fetchWindyInfo = async (lat, lon) => {
-      return `Wind patterns and pressure system not yet integrated. Coordinates: ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=YOUR_OPENWEATHERMAP_API_KEY&units=metric`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const wind = data.wind;
+        const pressure = data.main.pressure;
+        return `Wind speed ${wind.speed} m/s from ${wind.deg}°, pressure ${pressure} hPa`;
+      } catch (err) {
+        return `Unable to fetch wind data.`;
+      }
     };
 
     const location = await new Promise((resolve) => {
@@ -67,28 +76,30 @@
       );
     });
 
-    let narrative = `Based on your location, the weather is currently fair. Visibility is generally good with minor scattered clouds.`;
+    let narrative = `📍 Weather at your location:`;
 
     if (location) {
       const windPattern = await fetchWindyInfo(location.latitude, location.longitude);
-      narrative += `\n\n📍 Wind & Pressure: ${windPattern}`;
+      narrative += `\n\n🌬️ Wind & Pressure: ${windPattern}`;
+    } else {
+      narrative += `\n\n⚠️ Location data not available.`;
     }
 
     if (dest) {
       const destMetar = await fetchMetar(dest);
-      narrative += `\n\nDestination (${dest}): ${destMetar}`;
+      narrative += `\n\n🛬 Destination (${dest}): ${destMetar}`;
     }
     if (alt) {
       const altMetar = await fetchMetar(alt);
-      narrative += `\n\nAlternate (${alt}): ${altMetar}`;
+      narrative += `\n\n🛬 Alternate (${alt}): ${altMetar}`;
     }
 
     if (narrative.includes("TS") || narrative.includes("CB")) {
-      narrative += `\n\n⚠️ Significant weather phenomenon detected: possible thunderstorms or cumulonimbus clouds.`;
+      narrative += `\n\n⚠️ Thunderstorm or cumulonimbus detected.`;
     } else if (narrative.includes("RA")) {
-      narrative += `\n\n🌧️ Rain is currently observed in the area.`;
-    } else if (narrative.includes("BR") || narrative.includes("FG")) {
-      narrative += `\n\n🌫️ Reduced visibility due to mist or fog.`;
+      narrative += `\n\n🌧️ Rainfall reported.`;
+    } else if (narrative.includes("FG") || narrative.includes("BR")) {
+      narrative += `\n\n🌫️ Fog or mist reducing visibility.`;
     }
 
     document.getElementById('weatherNarrative').textContent = narrative;
@@ -104,6 +115,7 @@
   }
   fetchWeatherNarrative();
 </script>
+
 
 </body>
 </html>
