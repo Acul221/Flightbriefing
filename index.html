@@ -103,7 +103,7 @@
       el.classList.remove('hidden');
     }
 
-    // Block & Air Time with Day/Night split based on Surabaya sunset/sunrise
+    // Block & Air Time 
     function calculateBlockTime() {
       const tof = id => {
         const v = document.getElementById(id).value;
@@ -118,19 +118,6 @@
       if (!blockOff || !airborne || !landing || !blockOn) {
         alert('Please fill all time fields.'); return;
       }
-      // Adjust overnight
-      if (blockOn <= blockOff) blockOn.setUTCDate(blockOn.getUTCDate()+1);
-      if (landing <= airborne) landing.setUTCDate(landing.getUTCDate()+1);
-      const toMin = d => d.getUTCHours()*60 + d.getUTCMinutes();
-      const blockMin = toMin(blockOn) - toMin(blockOff);
-      const airMin = toMin(landing) - toMin(airborne);
-
-      // Surabaya UTC coordinates
-      const lat=-7.3798, lon=112.7870;
-      const times = SunCalc.getTimes(new Date(), lat, lon);
-      const sr = times.sunrise.getUTCHours()*60 + times.sunrise.getUTCMinutes();
-      const ss = times.sunset.getUTCHours()*60 + times.sunset.getUTCMinutes();
-
       const calcSplit = (start, duration) => {
         let night=0;
         for (let i=0; i<duration; i++) {
