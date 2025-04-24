@@ -52,51 +52,13 @@
     const narrativeBox = document.getElementById('weatherNarrative');
     narrativeBox.textContent = 'Generating analysis...';
 
-    const fetchMetar = async (icao) => {
-      const url = `https://avwx.rest/api/metar/${icao}`;
+    const fetchProxy = async (endpoint, icao) => {
       try {
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
-            Accept: "application/json"
-          }
-        });
+        const res = await fetch(`/api/${endpoint}?icao=${icao}`);
         const data = await res.json();
-        return { raw: data.raw, sanitized: data.sanitized };
-      } catch (err) {
-        return { raw: '', sanitized: 'Unable to fetch METAR data' };
-      }
-    };
-
-    const fetchTAF = async (icao) => {
-      const url = `https://avwx.rest/api/taf/${icao}`;
-      try {
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
-            Accept: "application/json"
-          }
-        });
-        const data = await res.json();
-        return data.sanitized || 'No TAF available';
-      } catch (err) {
-        return 'Unable to fetch TAF data';
-      }
-    };
-
-    const fetchSIGMET = async (icao) => {
-      const url = `https://avwx.rest/api/sigmet/${icao}`;
-      try {
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer NJguHgtYtFHNznXNQ8S_dmFK2re90L4M12Y4DAert2c",
-            Accept: "application/json"
-          }
-        });
-        const data = await res.json();
-        return data.map(sig => `• ${sig.raw}`).join('\n') || 'No SIGMETs reported.';
-      } catch (err) {
-        return 'Unable to fetch SIGMET data';
+        return data;
+      } catch {
+        return endpoint === 'sigmet' ? 'Unable to fetch SIGMET data' : 'Unable to fetch weather data';
       }
     };
 
@@ -112,16 +74,10 @@
     if (location) {
       const lat = location.latitude;
       const lon = location.longitude;
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=1e33da44f15aa3a57be99830ad01cd05&units=metric`;
       try {
-        const res = await fetch(url);
+        const res = await fetch(`/api/current?lat=${lat}&lon=${lon}`);
         const data = await res.json();
-        const wind = data.wind;
-        const pressure = data.main.pressure;
-        const clouds = data.weather[0].description;
-        const temp = data.main.temp;
-        const visibility = data.visibility;
-        narrative += `\n\n🌦️ Temperature ${temp}°C, ${clouds}, wind ${wind.speed} m/s from ${wind.deg}°, pressure ${pressure} hPa, visibility ${visibility} m.`;
+        narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
       } catch {
         narrative += '\n\n⚠️ Unable to fetch local weather conditions.';
       }
@@ -130,38 +86,27 @@
     }
 
     if (dest) {
-      const destMetar = await fetchMetar(dest);
-      const destTaf = await fetchTAF(dest);
-      const destSigmet = await fetchSIGMET(dest);
-      narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${destMetar.sanitized}\nTAF: ${destTaf}\nSIGMET: ${destSigmet}`;
+      const metar = await fetchProxy('metar', dest);
+      const taf = await fetchProxy('taf', dest);
+      const sigmet = await fetchProxy('sigmet', dest);
+      narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
     }
     if (alt) {
-      const altMetar = await fetchMetar(alt);
-      const altTaf = await fetchTAF(alt);
-      const altSigmet = await fetchSIGMET(alt);
-      narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${altMetar.sanitized}\nTAF: ${altTaf}\nSIGMET: ${altSigmet}`;
+      const metar = await fetchProxy('metar', alt);
+      const taf = await fetchProxy('taf', alt);
+      const sigmet = await fetchProxy('sigmet', alt);
+      narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
     }
 
     try {
-      const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      const res = await fetch("/.netlify/functions/gpt", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer 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`
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: "You are an aviation weather assistant. Analyze the following METAR and TAF data." },
-            { role: "user", content: narrative }
-          ]
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: narrative })
       });
-
-      const gptData = await gptResponse.json();
-      const aiNarrative = gptData.choices?.[0]?.message?.content || "No analysis available.";
-      narrative += `\n\n🧠 AI Reasoning:\n${aiNarrative}`;
-    } catch (error) {
+      const result = await res.json();
+      narrative += `\n\n🧠 AI Reasoning:\n${result.analysis}`;
+    } catch {
       narrative += '\n\n⚠️ AI reasoning unavailable.';
     }
 
@@ -178,8 +123,10 @@
   }
   fetchWeatherNarrative();
 </script>
+
 </body>
 </html>
+
 
 </header>
  <!-- Time Between Dates Section -->
