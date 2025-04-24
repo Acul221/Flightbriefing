@@ -10,7 +10,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-<!-- Header -->
 <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 shadow-md">
   <div class="max-w-6xl mx-auto text-center">
     <h1 class="text-4xl font-extrabold mb-2">Briefing Dashboard</h1>
@@ -23,7 +22,6 @@
   </div>
 </header>
 
-<!-- Weather Narrative Section -->
 <section class="p-6 mt-6 max-w-6xl mx-auto bg-white rounded-xl shadow">
   <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-bold">🛰️ Weather Summary</h2>
@@ -46,82 +44,82 @@
 </section>
 
 <script>
-  async function generateWeatherNarrative() {
-    const dest = document.getElementById('destAirport').value.trim().toUpperCase();
-    const alt = document.getElementById('altAirport').value.trim().toUpperCase();
-    const narrativeBox = document.getElementById('weatherNarrative');
-    narrativeBox.textContent = 'Generating analysis...';
+async function generateWeatherNarrative() {
+  const dest = document.getElementById('destAirport').value.trim().toUpperCase();
+  const alt = document.getElementById('altAirport').value.trim().toUpperCase();
+  const narrativeBox = document.getElementById('weatherNarrative');
+  narrativeBox.textContent = 'Generating analysis...';
 
-    const fetchProxy = async (endpoint, icao) => {
-      try {
-        const res = await fetch(`/api/${endpoint}?icao=${icao}`);
-        const data = await res.json();
-        return data;
-      } catch {
-        return endpoint === 'sigmet' ? 'Unable to fetch SIGMET data' : 'Unable to fetch weather data';
-      }
-    };
-
-    const location = await new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve(pos.coords),
-        () => resolve(null)
-      );
-    });
-
-    let narrative = `📍 Weather at your current location:`;
-
-    if (location) {
-      const lat = location.latitude;
-      const lon = location.longitude;
-      try {
-        const res = await fetch(`/api/current?lat=${lat}&lon=${lon}`);
-        const data = await res.json();
-        narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
-      } catch {
-        narrative += '\n\n⚠️ Unable to fetch local weather conditions.';
-      }
-    } else {
-      narrative += '\n\n⚠️ Location data not available.';
-    }
-
-    if (dest) {
-      const metar = await fetchProxy('metar', dest);
-      const taf = await fetchProxy('taf', dest);
-      const sigmet = await fetchProxy('sigmet', dest);
-      narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
-    }
-    if (alt) {
-      const metar = await fetchProxy('metar', alt);
-      const taf = await fetchProxy('taf', alt);
-      const sigmet = await fetchProxy('sigmet', alt);
-      narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
-    }
-
+  const fetchProxy = async (endpoint, icao) => {
     try {
-      const res = await fetch("/.netlify/functions/gpt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: narrative })
-      });
-      const result = await res.json();
-      narrative += `\n\n🧠 AI Reasoning:\n${result.analysis}`;
+      const res = await fetch(`/api/${endpoint}?icao=${icao}`);
+      const data = await res.json();
+      return data;
     } catch {
-      narrative += '\n\n⚠️ AI reasoning unavailable.';
+      return endpoint === 'sigmet' ? 'Unable to fetch SIGMET data' : 'Unable to fetch weather data';
     }
+  };
 
-    narrativeBox.textContent = narrative;
+  const location = await new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve(pos.coords),
+      () => resolve(null)
+    );
+  });
+
+  let narrative = `📍 Weather at your current location:`;
+
+  if (location) {
+    const lat = location.latitude;
+    const lon = location.longitude;
+    try {
+      const res = await fetch(`/api/current?lat=${lat}&lon=${lon}`);
+      const data = await res.json();
+      narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
+    } catch {
+      narrative += '\n\n⚠️ Unable to fetch local weather conditions.';
+    }
+  } else {
+    narrative += '\n\n⚠️ Location data not available.';
   }
 
-  function fetchWeatherNarrative() {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(() => {
-      generateWeatherNarrative();
-    }, () => {
-      document.getElementById('weatherNarrative').textContent = "Location access denied.";
+  if (dest) {
+    const metar = await fetchProxy('metar', dest);
+    const taf = await fetchProxy('taf', dest);
+    const sigmet = await fetchProxy('sigmet', dest);
+    narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
+  }
+  if (alt) {
+    const metar = await fetchProxy('metar', alt);
+    const taf = await fetchProxy('taf', alt);
+    const sigmet = await fetchProxy('sigmet', alt);
+    narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
+  }
+
+  try {
+    const res = await fetch("/.netlify/functions/get-weather-gpt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ narrative })
     });
+    const result = await res.json();
+    narrative += `\n\n🧠 AI Reasoning:\n${result.analysis}`;
+  } catch {
+    narrative += '\n\n⚠️ AI reasoning unavailable.';
   }
-  fetchWeatherNarrative();
+
+  narrativeBox.textContent = narrative;
+}
+
+function fetchWeatherNarrative() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(() => {
+    generateWeatherNarrative();
+  }, () => {
+    document.getElementById('weatherNarrative').textContent = "Location access denied.";
+  });
+}
+fetchWeatherNarrative();
 </script>
 
 </body>
