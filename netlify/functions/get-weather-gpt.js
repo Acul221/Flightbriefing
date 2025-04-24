@@ -1,0 +1,30 @@
+// netlify/functions/get-weather-gpt.js
+export default async function handler(req, res) {
+  const { narrative } = JSON.parse(req.body || '{}');
+
+  const gptApiKey = process.env.GPT_API_KEY;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${gptApiKey}`
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: "You are an aviation weather assistant. Provide a human-readable summary based on the following."
+        },
+        {
+          role: "user",
+          content: narrative
+        }
+      ]
+    })
+  });
+
+  const data = await response.json();
+  return res.status(200).json(data);
+}
