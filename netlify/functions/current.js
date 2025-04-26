@@ -21,4 +21,4 @@ export default async function handler(req, res) {
     console.error("Current Weather Proxy Error:", error);
     res.status(500).json({ error: "Failed to fetch current weather." });
   }
-}
+};
