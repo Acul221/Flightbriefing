@@ -23,4 +23,4 @@ export default async function handler(req, res) {
     console.error("SIGMET Proxy Error:", error);
     res.status(500).json({ error: "Failed to fetch SIGMET data." });
   }
-}
+};
