@@ -1,6 +1,10 @@
 export default async function handler(req, res) {
   const { icao } = req.query;
 
+  if (!icao) {
+    return res.status(400).json({ error: "ICAO code is required." });
+  }
+
   try {
     const response = await fetch(`https://avwx.rest/api/sigmet/${icao}`, {
       headers: {
@@ -8,10 +12,15 @@ export default async function handler(req, res) {
         Accept: "application/json"
       }
     });
+
     const data = await response.json();
-    const sigmets = data.length > 0 ? data.map(sig => `• ${sig.raw}`).join("\n") : "No SIGMETs reported.";
-    res.status(200).json(sigmets);
+    if (Array.isArray(data) && data.length > 0) {
+      res.status(200).json(data.map(item => item.raw).join("\n"));
+    } else {
+      res.status(200).json("No SIGMETs reported.");
+    }
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch SIGMET" });
+    console.error("SIGMET Proxy Error:", error);
+    res.status(500).json({ error: "Failed to fetch SIGMET data." });
   }
 }
