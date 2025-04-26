@@ -33,11 +33,11 @@
   <div class="grid sm:grid-cols-2 gap-4 mb-4">
     <div class="flex flex-col">
       <label for="destAirport" class="text-sm text-gray-700 mb-1">Destination Airport (ICAO)</label>
-      <input id="destAirport" type="text" placeholder="e.g., WIII" class="p-2 border rounded w-full" />
+      <input id="destAirport" type="text" placeholder="e.g., WIII" class="p-2 border rounded w-full" pattern="[A-Z]{4}" title="Enter a valid 4-letter ICAO code" required />
     </div>
     <div class="flex flex-col">
       <label for="altAirport" class="text-sm text-gray-700 mb-1">Alternate Airport (ICAO)</label>
-      <input id="altAirport" type="text" placeholder="e.g., WARR" class="p-2 border rounded w-full" />
+      <input id="altAirport" type="text" placeholder="e.g., WARR" class="p-2 border rounded w-full" pattern="[A-Z]{4}" title="Enter a valid 4-letter ICAO code" required />
     </div>
   </div>
   <div class="bg-gray-50 p-4 rounded border text-sm text-gray-800 whitespace-pre-line" id="weatherNarrative">Fetching weather summary...</div>
@@ -50,35 +50,42 @@ async function generateWeatherNarrative() {
   const narrativeBox = document.getElementById('weatherNarrative');
   narrativeBox.textContent = 'Generating analysis...';
 
-  // Helper untuk fetch METAR/TAF/SIGMET
+  // Helper function for fetching METAR/TAF/SIGMET
   const fetchProxy = async (endpoint, icao) => {
     try {
       const res = await fetch(`/api/${endpoint}?icao=${icao}`);
+      if (!res.ok) throw new Error(`Failed to fetch ${endpoint} data for ${icao}`);
       const data = await res.json();
-      return data;
-    } catch {
+      return data.raw || JSON.stringify(data, null, 2);
+    } catch (error) {
+      console.error(error);
       return endpoint === 'sigmet' ? 'Unable to fetch SIGMET data' : 'Unable to fetch weather data';
     }
   };
 
-  // Ambil lokasi user
+  // Fetch user location
   const location = await new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve(pos.coords),
-      () => resolve(null)
+      (error) => {
+        console.error("Geolocation error:", error.message);
+        resolve(null);
+        alert("Location access denied. Weather data may be limited.");
+      }
     );
   });
 
   let narrative = `📍 Weather at your current location:`;
 
   if (location) {
-    const lat = location.latitude;
-    const lon = location.longitude;
+    const { latitude: lat, longitude: lon } = location;
     try {
       const res = await fetch(`/api/current?lat=${lat}&lon=${lon}`);
+      if (!res.ok) throw new Error("Failed to fetch local weather conditions.");
       const data = await res.json();
       narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
-    } catch {
+    } catch (error) {
+      console.error(error);
       narrative += '\n\n⚠️ Unable to fetch local weather conditions.';
     }
   } else {
@@ -87,25 +94,30 @@ async function generateWeatherNarrative() {
 
   // Fetch Destination and Alternate
   if (dest) {
-    const metar = await fetchProxy('metar', dest);
-    const taf = await fetchProxy('taf', dest);
-    const sigmet = await fetchProxy('sigmet', dest);
+    const [metar, taf, sigmet] = await Promise.all([
+      fetchProxy('metar', dest),
+      fetchProxy('taf', dest),
+      fetchProxy('sigmet', dest)
+    ]);
     narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
   }
   if (alt) {
-    const metar = await fetchProxy('metar', alt);
-    const taf = await fetchProxy('taf', alt);
-    const sigmet = await fetchProxy('sigmet', alt);
+    const [metar, taf, sigmet] = await Promise.all([
+      fetchProxy('metar', alt),
+      fetchProxy('taf', alt),
+      fetchProxy('sigmet', alt)
+    ]);
     narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
   }
 
-  // --- Now send to Netlify Function (backend) ---
+  // Send to Netlify Function (backend)
   try {
     const res = await fetch("/.netlify/functions/get-weather-gpt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ narrative })
     });
+    if (!res.ok) throw new Error("Failed to fetch AI analysis.");
     const result = await res.json();
 
     if (result.analysis) {
@@ -118,11 +130,11 @@ async function generateWeatherNarrative() {
     narrative += '\n\n⚠️ AI reasoning unavailable.';
   }
 
-  // Tampilkan hasil akhirnya
+  // Display final result
   narrativeBox.textContent = narrative;
 }
 
-// Untuk auto-fetch saat pertama load
+// Auto-fetch weather narrative on load
 function fetchWeatherNarrative() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(() => {
@@ -133,7 +145,6 @@ function fetchWeatherNarrative() {
 }
 fetchWeatherNarrative();
 </script>
-
 
 </body>
 </html>
