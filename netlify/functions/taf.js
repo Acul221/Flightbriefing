@@ -1,22 +1,23 @@
+// netlify/functions/taf.js
 export default async function handler(req, res) {
   const { icao } = req.query;
+  const avwxKey = process.env.AVWX_API_KEY;
 
-  if (!icao) {
-    return res.status(400).json({ error: "ICAO code is required." });
+  if (!icao || !avwxKey) {
+    return res.status(400).json({ error: "Missing ICAO code or API key" });
   }
 
   try {
     const response = await fetch(`https://avwx.rest/api/taf/${icao}`, {
       headers: {
-        Authorization: `Bearer ${process.env.AVWX_API_KEY}`,
-        Accept: "application/json"
-      }
+        Authorization: `Bearer ${avwxKey}`,
+        Accept: "application/json",
+      },
     });
-
     const data = await response.json();
-    res.status(200).json(data.sanitized || "No TAF data available.");
+    res.status(200).json(data.sanitized || data.raw || "No TAF data available");
   } catch (error) {
-    console.error("TAF Proxy Error:", error);
-    res.status(500).json({ error: "Failed to fetch TAF data." });
+    console.error("TAF Function Error:", error);
+    res.status(500).json({ error: "Failed to fetch TAF" });
   }
-};
+}
