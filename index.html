@@ -50,6 +50,7 @@ async function generateWeatherNarrative() {
   const narrativeBox = document.getElementById('weatherNarrative');
   narrativeBox.textContent = 'Generating analysis...';
 
+  // Helper untuk fetch METAR/TAF/SIGMET
   const fetchProxy = async (endpoint, icao) => {
     try {
       const res = await fetch(`/api/${endpoint}?icao=${icao}`);
@@ -60,6 +61,7 @@ async function generateWeatherNarrative() {
     }
   };
 
+  // Ambil lokasi user
   const location = await new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve(pos.coords),
@@ -83,6 +85,7 @@ async function generateWeatherNarrative() {
     narrative += '\n\n⚠️ Location data not available.';
   }
 
+  // Fetch Destination and Alternate
   if (dest) {
     const metar = await fetchProxy('metar', dest);
     const taf = await fetchProxy('taf', dest);
@@ -96,6 +99,7 @@ async function generateWeatherNarrative() {
     narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
   }
 
+  // --- Now send to Netlify Function (backend) ---
   try {
     const res = await fetch("/.netlify/functions/get-weather-gpt", {
       method: "POST",
@@ -103,14 +107,22 @@ async function generateWeatherNarrative() {
       body: JSON.stringify({ narrative })
     });
     const result = await res.json();
-    narrative += `\n\n🧠 AI Reasoning:\n${result.analysis}`;
-  } catch {
+
+    if (result.analysis) {
+      narrative += `\n\n🧠 AI Reasoning:\n${result.analysis}`;
+    } else {
+      narrative += '\n\n⚠️ AI reasoning unavailable (no analysis returned).';
+    }
+  } catch (error) {
+    console.error("Error fetching AI analysis:", error);
     narrative += '\n\n⚠️ AI reasoning unavailable.';
   }
 
+  // Tampilkan hasil akhirnya
   narrativeBox.textContent = narrative;
 }
 
+// Untuk auto-fetch saat pertama load
 function fetchWeatherNarrative() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(() => {
@@ -121,6 +133,7 @@ function fetchWeatherNarrative() {
 }
 fetchWeatherNarrative();
 </script>
+
 
 </body>
 </html>
