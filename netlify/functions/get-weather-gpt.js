@@ -1,5 +1,4 @@
 // netlify/functions/get-weather-gpt.js
-
 export default async function handler(req, res) {
   try {
     const { narrative } = JSON.parse(req.body || '{}');
@@ -13,21 +12,21 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${gptApiKey}`
+        Authorization: `Bearer ${gptApiKey}`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: [
           {
             role: "system",
-            content: "You are an aviation weather assistant. Provide a human-readable briefing based on the data below."
+            content: "You are an aviation weather assistant. Summarize the following weather data for flight operations.",
           },
           {
             role: "user",
-            content: narrative
-          }
-        ]
-      })
+            content: narrative,
+          },
+        ],
+      }),
     });
 
     const data = await response.json();
@@ -36,10 +35,10 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data });
     }
 
-    return res.status(200).json({ analysis: data.choices?.[0]?.message?.content || "No analysis returned." });
+    return res.status(200).json({ analysis: data.choices?.[0]?.message?.content || "No analysis available." });
 
   } catch (error) {
-    console.error("GPT Proxy Error:", error);
+    console.error("GPT Function Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
