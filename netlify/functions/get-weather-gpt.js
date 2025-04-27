@@ -1,51 +1,39 @@
-export async function handler(event, context) {
+// netlify/functions/get-weather-gpt.js
+export default async function handler(req, res) {
   try {
-    const body = JSON.parse(event.body || '{}');
-    const { narrative } = body;
-    const openaiKey = process.env.GPT_API_KEY;
+    const { narrative } = JSON.parse(req.body || '{}');
+    const gptApiKey = process.env.GPT_API_KEY;
 
-    if (!narrative || !openaiKey) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Missing narrative text or GPT API Key" })
-      };
+    if (!gptApiKey) {
+      return res.status(500).json({ error: "GPT_API_KEY not defined" });
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${openaiKey}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${gptApiKey}`
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: [
           {
             role: "system",
-            content: "You are an aviation weather analyst. Summarize and analyze the provided weather briefing for a pilot in clear and concise English."
+            content: "You are an aviation weather assistant. Provide a human-readable summary."
           },
           {
             role: "user",
             content: narrative
           }
-        ],
-        temperature: 0.2
+        ]
       })
     });
 
     const data = await response.json();
+    return res.status(200).json({ analysis: data.choices?.[0]?.message?.content || "No response." });
 
-    const analysis = data.choices?.[0]?.message?.content || "Unable to generate analysis.";
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ analysis })
-    };
   } catch (error) {
-    console.error("GPT Reasoning Error:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Failed to fetch AI reasoning" })
-    };
+    console.error("GPT Proxy Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
