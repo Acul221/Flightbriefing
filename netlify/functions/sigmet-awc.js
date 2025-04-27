@@ -1,47 +1,23 @@
 // netlify/functions/sigmet-awc.js
 
-export async function handler(event, context) {
-  const params = new URLSearchParams(event.queryStringParameters);
-  const icao = params.get("icao");
+export default async (req, res) => {
+  const { icao } = req.query;
 
   if (!icao) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "Missing ICAO code" })
-    };
+    return res.status(400).json({ error: "Missing ICAO code" });
   }
 
   try {
-    const response = await fetch("https://aviationweather.gov/api/data/sigmet", {
-      headers: { "Accept": "application/json" }
-    });
+    const url = `https://aviationweather.gov/api/data/sigmet`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
 
-    const data = await response.json();
+    const response = await fetch(proxyUrl);
+    const textData = await response.text();
 
-    const filteredSigmets = data.features.filter(sigmet => {
-      const location = sigmet.properties?.fir?.toUpperCase() || "";
-      return location.includes(icao.substring(0, 2)); // Filter pakai 2 huruf awal
-    });
-
-    if (filteredSigmets.length === 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify("No SIGMETs found for this region.")
-      };
-    }
-
-    const result = filteredSigmets.map(sigmet => sigmet.properties.rawSigmet).join("\n\n");
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result)
-    };
-
+    // AWC data biasanya berupa XML. Untuk sekarang kita kirim raw text.
+    res.status(200).json({ rawSigmet: textData });
   } catch (error) {
-    console.error("SIGMET AWC Error:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Failed to fetch SIGMET from AWC" })
-    };
+    console.error("SIGMET AWC Fetch Error:", error);
+    res.status(500).json({ error: "Failed to fetch SIGMET from AWC" });
   }
-}
+};
