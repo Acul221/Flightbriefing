@@ -10,16 +10,17 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
     const data = await response.json();
-    res.status(200).json({
-      temp: data.main.temp,
+
+    return res.status(200).json({
+      temp: data.main?.temp,
       clouds: data.weather?.[0]?.description || "Unknown",
       windSpeed: data.wind?.speed,
       windDeg: data.wind?.deg,
-      pressure: data.main.pressure,
+      pressure: data.main?.pressure,
       visibility: data.visibility,
     });
   } catch (error) {
-    console.error("Current Weather Function Error:", error);
-    res.status(500).json({ error: "Failed to fetch current weather" });
+    console.error("Error fetching current weather:", error);
+    return res.status(500).json({ error: "Failed to fetch weather data" });
   }
 }
