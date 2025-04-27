@@ -1,41 +1,33 @@
-// netlify/functions/sigmet.js
 export async function handler(event, context) {
-  const { icao } = event.queryStringParameters || {};
-  const avwxKey = process.env.AVWX_API_KEY;
+  const url = new URL(event.rawUrl);
+  const icao = url.searchParams.get('icao');
+  const apiKey = process.env.AVWX_API_KEY;
 
-  if (!icao || !avwxKey) {
+  if (!icao || !apiKey) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: "Missing ICAO code or AVWX API key" })
+      body: JSON.stringify({ error: "Missing ICAO or API Key" })
     };
   }
 
   try {
     const response = await fetch(`https://avwx.rest/api/sigmet/${icao}`, {
       headers: {
-        Authorization: `Bearer ${avwxKey}`,
-        Accept: 'application/json'
+        Authorization: `Bearer ${apiKey}`,
+        Accept: "application/json"
       }
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: errorData.error || "Failed to fetch SIGMET" })
-      };
-    }
 
     const data = await response.json();
     return {
       statusCode: 200,
-      body: JSON.stringify(data || {})
+      body: JSON.stringify(data.raw || "No SIGMET data available")
     };
   } catch (error) {
-    console.error("SIGMET Proxy Error:", error);
+    console.error("SIGMET Function Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Server error fetching SIGMET" })
+      body: JSON.stringify({ error: "Failed to fetch SIGMET" })
     };
   }
 }
