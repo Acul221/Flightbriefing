@@ -1,7 +1,7 @@
 // netlify/functions/sigmet-awc.js
 
 export default async (req) => {
-  const { icao } = req.query;
+  const { icao } = event.queryStringParameters || {};
 
   if (!icao) {
     return new Response(JSON.stringify({ error: "Missing ICAO parameter" }), {
