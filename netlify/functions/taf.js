@@ -1,6 +1,7 @@
 // netlify/functions/taf.js
 export default async function handler(req, res) {
-  const { icao } = req.query;
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const icao = url.searchParams.get('icao');
   const apiKey = process.env.AVWX_API_KEY;
 
   if (!icao || !apiKey) {
