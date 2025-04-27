@@ -8,9 +8,15 @@ export default async (req, res) => {
     const response = await fetch(proxyUrl);
     const textData = await response.text();
 
-    return res.status(200).json({ rawSigmet: textData });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ rawSigmet: textData }),
+    };
   } catch (error) {
     console.error("SIGMET AWC Fetch Error:", error);
-    return res.status(500).json({ error: "Failed to fetch SIGMET from AWC" });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Failed to fetch SIGMET from AWC" }),
+    };
   }
 };
