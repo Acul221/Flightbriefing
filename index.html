@@ -5,16 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Briefing Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .loading {
+      animation: spin 1s linear infinite;
+      border: 2px solid #ccc;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-<header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 shadow-md">
+<header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 shadow">
   <div class="max-w-6xl mx-auto text-center">
-    <h1 class="text-4xl font-extrabold mb-2">Briefing Dashboard</h1>
-    <p class="text-xl">Welcome Captain</p>
-    <p class="text-2xl font-bold italic mt-2">Proper Preparation Prevents Poor Performance</p>
+    <h1 class="text-4xl font-extrabold">Briefing Dashboard</h1>
+    <p class="text-xl mt-2">Welcome Captain</p>
+    <p class="text-2xl italic font-semibold mt-1">Proper Preparation Prevents Poor Performance</p>
     <div id="clock-container" class="mt-4 font-mono text-lg">
       <div id="local-time">Local Time: --</div>
       <div id="utc-time">UTC Time: --</div>
@@ -22,25 +35,27 @@
   </div>
 </header>
 
-<section class="p-6 mt-6 max-w-6xl mx-auto bg-white rounded-xl shadow">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-bold">🛰️ Weather Summary</h2>
-    <button onclick="generateWeatherNarrative()" class="flex items-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-      🔄 Update Weather
+<section class="p-6 mt-6 max-w-6xl mx-auto bg-white rounded-xl shadow space-y-6">
+  <div class="flex justify-between items-center">
+    <h2 class="text-2xl font-bold">🛡️ Weather Summary</h2>
+    <button id="updateButton" onclick="generateWeatherNarrative()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <div id="loadingIndicator" class="hidden loading"></div>
+      <span id="updateText">Update Weather</span>
     </button>
   </div>
-  <p class="text-sm text-gray-600 mb-4">Automatically generated based on your location, destination, and alternate</p>
-  <div class="grid sm:grid-cols-2 gap-4 mb-4">
-    <div class="flex flex-col">
-      <label for="destAirport" class="text-sm text-gray-700 mb-1">Destination Airport (ICAO)</label>
-      <input id="destAirport" type="text" placeholder="e.g., WIII" class="p-2 border rounded w-full" />
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div>
+      <label for="destAirport" class="text-sm font-medium">Destination ICAO</label>
+      <input id="destAirport" type="text" placeholder="e.g., WIII" class="p-2 border rounded w-full mt-1" />
     </div>
-    <div class="flex flex-col">
-      <label for="altAirport" class="text-sm text-gray-700 mb-1">Alternate Airport (ICAO)</label>
-      <input id="altAirport" type="text" placeholder="e.g., WARR" class="p-2 border rounded w-full" />
+    <div>
+      <label for="altAirport" class="text-sm font-medium">Alternate ICAO</label>
+      <input id="altAirport" type="text" placeholder="e.g., WARR" class="p-2 border rounded w-full mt-1" />
     </div>
   </div>
-  <div class="bg-gray-50 p-4 rounded border text-sm text-gray-800 whitespace-pre-line" id="weatherNarrative">Fetching weather summary...</div>
+  <div id="weatherNarrative" class="bg-gray-50 p-4 rounded border text-sm whitespace-pre-line min-h-[200px]">
+    Fetching weather summary...
+  </div>
 </section>
 
 <script>
@@ -48,24 +63,24 @@ async function generateWeatherNarrative() {
   const dest = document.getElementById('destAirport').value.trim().toUpperCase();
   const alt = document.getElementById('altAirport').value.trim().toUpperCase();
   const narrativeBox = document.getElementById('weatherNarrative');
-  narrativeBox.textContent = 'Generating analysis...';
+  const button = document.getElementById('updateButton');
+  const loading = document.getElementById('loadingIndicator');
+  const updateText = document.getElementById('updateText');
 
-  const fetchProxy = async (endpoint, param) => {
+  button.disabled = true;
+  loading.classList.remove('hidden');
+  updateText.classList.add('hidden');
+
+  const fetchProxy = async (endpoint, icao) => {
     try {
-      const url = endpoint === 'current'
-        ? `/.netlify/functions/current?lat=${param.lat}&lon=${param.lon}`
-        : `/.netlify/functions/${endpoint}?icao=${param}`;
-      const res = await fetch(url);
+      const res = await fetch(`/api/${endpoint}?icao=${icao}`);
       const data = await res.json();
-      return data;
+      return data.raw || data;
     } catch {
-      return 'Unable to fetch data';
+      return endpoint === 'sigmet' ? 'SIGMET unavailable' : 'Weather data unavailable';
     }
   };
 
-  let narrative = `📍 Weather at your current location:`;
-  
-  // Fetch location weather
   const location = await new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve(pos.coords),
@@ -73,34 +88,36 @@ async function generateWeatherNarrative() {
     );
   });
 
+  let narrative = `📍 Weather at your current location:`;
+
   if (location) {
+    const lat = location.latitude;
+    const lon = location.longitude;
     try {
-      const data = await fetchProxy('current', { lat: location.latitude, lon: location.longitude });
-      narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
+      const res = await fetch(`/api/current?lat=${lat}&lon=${lon}`);
+      const data = await res.json();
+      narrative += `\n\n🌧️ Temp ${data.temp}°C, ${data.clouds}, Wind ${data.windSpeed} m/s from ${data.windDeg}°, Pressure ${data.pressure} hPa, Visibility ${data.visibility} m.`;
     } catch {
-      narrative += '\n\n⚠️ Unable to fetch local weather conditions.';
+      narrative += '\n\n⚠️ Unable to fetch local weather.';
     }
   } else {
-    narrative += '\n\n⚠️ Location data not available.';
+    narrative += '\n\n⚠️ Location unavailable.';
   }
 
-  // Destination
   if (dest) {
     const metar = await fetchProxy('metar', dest);
     const taf = await fetchProxy('taf', dest);
     const sigmet = await fetchProxy('sigmet', dest);
-    narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
+    narrative += `\n\n🛂 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
   }
 
-  // Alternate
   if (alt) {
     const metar = await fetchProxy('metar', alt);
     const taf = await fetchProxy('taf', alt);
     const sigmet = await fetchProxy('sigmet', alt);
-    narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
+    narrative += `\n\n🛂 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
   }
 
-  // Send to GPT backend
   try {
     const res = await fetch("/.netlify/functions/get-weather-gpt", {
       method: "POST",
@@ -111,25 +128,29 @@ async function generateWeatherNarrative() {
     if (result.analysis) {
       narrative += `\n\n🧠 AI Reasoning:\n${result.analysis}`;
     } else {
-      narrative += '\n\n⚠️ AI reasoning unavailable (no analysis returned).';
+      narrative += '\n\n⚠️ AI analysis unavailable.';
     }
   } catch (error) {
-    narrative += '\n\n⚠️ AI reasoning unavailable.';
+    console.error(error);
+    narrative += '\n\n⚠️ AI analysis error.';
   }
 
   narrativeBox.textContent = narrative;
+  button.disabled = false;
+  loading.classList.add('hidden');
+  updateText.classList.remove('hidden');
 }
 
-function fetchWeatherNarrative() {
-  if (!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(() => {
-    generateWeatherNarrative();
-  }, () => {
-    document.getElementById('weatherNarrative').textContent = "Location access denied.";
-  });
+function updateClocks() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  document.getElementById('local-time').textContent = `Local Time: ${now.toLocaleDateString()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  document.getElementById('utc-time').textContent = `UTC Time: ${now.getUTCDate()}-${pad(now.getUTCMonth()+1)}-${now.getUTCFullYear()} ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}Z`;
 }
-fetchWeatherNarrative();
+setInterval(updateClocks, 1000);
+updateClocks();
 </script>
+
 
 </body>
 </html>
