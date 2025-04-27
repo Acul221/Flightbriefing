@@ -8,32 +8,41 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "GPT_API_KEY not defined" });
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const openaiUrl = "https://api.openai.com/v1/chat/completions";
+
+    const response = await fetch(openaiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${gptApiKey}`
+        Authorization: `Bearer ${gptApiKey}`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: [
           {
             role: "system",
-            content: "You are an aviation weather assistant. Provide a human-readable summary."
+            content: "You are an aviation weather assistant. Provide a clear, easy-to-understand weather analysis for pilots.",
           },
           {
             role: "user",
-            content: narrative
-          }
-        ]
-      })
+            content: narrative,
+          },
+        ],
+        temperature: 0.4,  // Sedikit kreatif tapi tetap factual
+        max_tokens: 400,
+      }),
     });
 
     const data = await response.json();
-    return res.status(200).json({ analysis: data.choices?.[0]?.message?.content || "No response." });
 
+    if (!response.ok) {
+      console.error("OpenAI API Error:", data);
+      return res.status(500).json({ error: data.error?.message || "Failed to get response from OpenAI" });
+    }
+
+    return res.status(200).json({ analysis: data.choices?.[0]?.message?.content || "No analysis generated." });
   } catch (error) {
-    console.error("GPT Proxy Error:", error);
+    console.error("get-weather-gpt function error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
