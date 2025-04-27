@@ -1,26 +1,26 @@
-export async function handler(event) {
+export default async function handler(event) {
   const { icao } = event.queryStringParameters || {};
-  
+
   if (!icao) {
-    return new Response(JSON.stringify({ error: "Missing ICAO parameter" }), {
+    return new Response(JSON.stringify({ error: "Missing ICAO code" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
   }
 
   try {
-    // Misal ambil data dari AWC
-    const response = await fetch(`https://aviationweather.gov/api/data/sigmet?icao=${icao}`);
-    const data = await response.text();
+    const response = await fetch(`https://aviationweather.gov/cgi-bin/data/sigmet.php?icao=${icao}`);
+    const rawSigmet = await response.text();
 
-    return new Response(JSON.stringify({ rawSigmet: data }), {
+    return new Response(JSON.stringify({ rawSigmet }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
   } catch (error) {
+    console.error("SIGMET AWC Error:", error);
     return new Response(JSON.stringify({ error: "Failed to fetch SIGMET from AWC" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
   }
 }
