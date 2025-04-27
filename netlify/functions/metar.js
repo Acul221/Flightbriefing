@@ -1,10 +1,13 @@
 // netlify/functions/metar.js
-export default async function handler(req, res) {
-  const { icao } = req.query;
+export async function handler(event, context) {
+  const { icao } = event.queryStringParameters || {};
   const avwxKey = process.env.AVWX_API_KEY;
 
   if (!icao || !avwxKey) {
-    return res.status(400).json({ error: "Missing ICAO code or AVWX API key" });
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Missing ICAO code or AVWX API key" })
+    };
   }
 
   try {
@@ -17,13 +20,22 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      return res.status(response.status).json({ error: errorData.error || "Failed to fetch METAR" });
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: errorData.error || "Failed to fetch METAR" })
+      };
     }
 
     const data = await response.json();
-    res.status(200).json(data.raw || data); // Kalau ada raw METAR, kirim raw, kalau tidak, kirim seluruh data
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data.raw || data)
+    };
   } catch (error) {
     console.error("METAR Proxy Error:", error);
-    res.status(500).json({ error: "Server error fetching METAR" });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Server error fetching METAR" })
+    };
   }
 }
