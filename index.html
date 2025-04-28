@@ -59,13 +59,13 @@ async function generateWeatherNarrative() {
       const data = await res.json();
       return data;
     } catch {
-      return 'Unable to fetch data';
+      return null;
     }
   };
 
   let narrative = `📍 Weather at your current location:`;
-  
-  // Fetch location weather
+
+  // Fetch location
   const location = await new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve(pos.coords),
@@ -76,7 +76,9 @@ async function generateWeatherNarrative() {
   if (location) {
     try {
       const data = await fetchProxy('current', { lat: location.latitude, lon: location.longitude });
-      narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
+      if (data) {
+        narrative += `\n\n🌦️ Temperature ${data.temp}°C, ${data.clouds}, wind ${data.windSpeed} m/s from ${data.windDeg}°, pressure ${data.pressure} hPa, visibility ${data.visibility} m.`;
+      }
     } catch {
       narrative += '\n\n⚠️ Unable to fetch local weather conditions.';
     }
@@ -84,22 +86,25 @@ async function generateWeatherNarrative() {
     narrative += '\n\n⚠️ Location data not available.';
   }
 
-  // Destination
+  // --- Destination Airport ---
   if (dest) {
-    const metar = await fetchProxy('metar', dest);
-    const taf = await fetchProxy('taf', dest);
-    const sigmet = await fetchProxy('sigmet', dest);
-    narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
+    const metar = await fetchProxy('metar', dest) || "METAR not available";
+    const taf = await fetchProxy('taf', dest) || "TAF not available";
+    const sigmetData = await fetchProxy('sigmet', dest);
+    const sigmet = sigmetData?.rawSigmet || "SIGMET not available";
+
+    narrative += `\n\n🛬 Destination (${dest}):\nMETAR: ${metar.raw || metar}\nTAF: ${taf.raw || taf}\nSIGMET: ${sigmet}`;
   }
 
-  // Alternate
+  // --- Alternate Airport ---
   if (alt) {
-    const metar = await fetchProxy('metar', alt);
-    const taf = await fetchProxy('taf', alt);
-    const sigmet = await fetchProxy('sigmet', alt);
-    narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metar}\nTAF: ${taf}\nSIGMET: ${sigmet}`;
-  }
+    const metarAlt = await fetchProxy('metar', alt) || "METAR not available";
+    const tafAlt = await fetchProxy('taf', alt) || "TAF not available";
+    const sigmetDataAlt = await fetchProxy('sigmet', alt);
+    const sigmetAlt = sigmetDataAlt?.rawSigmet || "SIGMET not available";
 
+    narrative += `\n\n🛬 Alternate (${alt}):\nMETAR: ${metarAlt.raw || metarAlt}\nTAF: ${tafAlt.raw || tafAlt}\nSIGMET: ${sigmetAlt}`;
+  }
   // Send to GPT backend
   try {
     const res = await fetch("/.netlify/functions/get-weather-gpt", {
