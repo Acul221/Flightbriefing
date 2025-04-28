@@ -274,18 +274,52 @@ fetchWeatherNarrative();
     <div id="resultBox" class="mt-4 p-3 border rounded bg-gray-100 font-mono text-sm hidden"></div>
     <div id="timestamp" class="mt-2 text-xs text-gray-500 hidden">Last updated: <span id="timestampValue"></span></div>
   </section> 
-<!-- BMKG MAPS External Link Card -->
-  <section class="mt-8 max-w-xl mx-auto px-4">
-    <h2 class="text-xl font-bold mb-2 text-center">BMKG Maps</h2>
-    <div class="grid grid-cols-2 gap-4">
-      <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
-        Open BMKG MAPS Website
-      </a>
-      <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" class="block bg-gray-800 text-white text-center p-4 rounded-xl shadow hover:bg-gray-700">
-        High Level SIGWX
-      </a>
-    </div>
-  </section>
+
+<section class="mt-8 max-w-6xl mx-auto px-4">
+  <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Aviation Weather Maps</h2>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- BMKG Aviation Maps -->
+    <a href="https://web-aviation.bmkg.go.id/maps" target="_blank" 
+      class="block bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 p-6 text-center">
+      <div class="flex justify-center items-center gap-2 mb-2">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 21l18-18" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-800">BMKG Aviation Maps</h3>
+      </div>
+      <p class="text-sm text-gray-600">Official aviation weather maps from BMKG Indonesia.</p>
+    </a>
+
+    <!-- BMKG High Level SIGWX -->
+    <a href="https://web-aviation.bmkg.go.id/web/sigwx_high_level.php" target="_blank" 
+      class="block bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 p-6 text-center">
+      <div class="flex justify-center items-center gap-2 mb-2">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 100 20 10 10 0 000-20z" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-800">BMKG High Level SIGWX</h3>
+      </div>
+      <p class="text-sm text-gray-600">Significant weather charts for flight level operations.</p>
+    </a>
+
+    <!-- AWC Graphical Forecast (GFA) -->
+    <a href="https://aviationweather.gov/gfa/?tab=obs&basemap=esriRoad&mapLayers=basicMap,artccHiMap,firMap,airspaceMap,airwayMap,jetrouteMap,airports,countiesMap,citiesMap,boundary,cwaMap&center=-2.789,114.98&zoom=5.25&boundarytype=gairmet&metardensity=1&metarscale=1.25&metartaf=1&metarunits=avn&metardecoded=1&sigmetheights=1&sigmetoutlook=1" 
+      target="_blank" 
+      class="block bg-white rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 p-6 text-center">
+      <div class="flex justify-center items-center gap-2 mb-2">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 2l9 5-9 5-9-5 9-5zm0 13l9 5-9 5-9-5 9-5z" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-800">AWC Graphical Forecast</h3>
+      </div>
+      <p class="text-sm text-gray-600">Graphical aviation forecasts from Aviation Weather Center USA.</p>
+    </a>
+
+  </div>
+</section>
+
 
   <!-- Windy Widget -->
 <section class="mt-8 max-w-6xl mx-auto px-4">
